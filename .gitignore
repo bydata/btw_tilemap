@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+data/tiles.topo.json
+data/shapefile/*
+**/.DS_Store
