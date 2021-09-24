@@ -108,7 +108,7 @@ wk_topo %>%
 
 
 ## LOAD SURVEY DATA ====================================
-#' Source: Arndt Leiniger
+#' Source: Arndt Leininger
 #' https://aleininger.eu/citizens_forecast2021/
 
 sheet_url <- "https://docs.google.com/spreadsheets/d/1xOg9kNRMfmUXoJAYNp7R93UHfPlVus-2VV-i-Rdx1Uc/edit#gid=0"
