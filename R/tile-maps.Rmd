@@ -80,6 +80,34 @@ sheet_url <- "https://docs.google.com/spreadsheets/d/1xOg9kNRMfmUXoJAYNp7R93UHfP
 dat_erst <- gsheet2tbl(sheet_url)
 #dat_erst <- read_csv(here::here("data", "Buerger_innenvorhersage 2021 - Prognose.csv"))
 
+
+#' t-Test auf Basis von Mittelwert und Standardabweichung 
+t_test_from_summary <- function(m1, m2, sd1, sd2, n1, n2, ...) {
+  group1 <- scale(1:n1)*sd1 + m1
+  group2 <- scale(1:n2)*sd2 + m2
+  t.test(group1, group2, ...)
+}
+
+
+dat_erst_ttest <- dat_erst %>% 
+  mutate(Stimmenanteil_Mean = ifelse(Stimmenanteil_Mean > 1000, 
+                                     Stimmenanteil_Mean / 1000, 
+                                     Stimmenanteil_Mean)) %>% 
+  group_by(wkr) %>% 
+  slice_max(order_by = Stimmenanteil_Mean, n = 2, with_ties = FALSE) %>% 
+  mutate(rank = rank(-Stimmenanteil_Mean, ties.method = "first")) %>% 
+  ungroup() %>% 
+  select(wkr, rank, Stimmenanteil_Mean, Stimmenanteil_SD, obs) %>% 
+  pivot_wider(id_cols = wkr, 
+              names_from = "rank", 
+              values_from = c("Stimmenanteil_Mean", "Stimmenanteil_SD", "obs")) %>% 
+  mutate(t_test = pmap(list(m1 = Stimmenanteil_Mean_1, m2 = Stimmenanteil_Mean_2,
+                      sd1 = Stimmenanteil_SD_1, sd2 = Stimmenanteil_SD_2,
+                      n1 = obs_1, n2 = obs_2, alternative = "greater"), 
+                      t_test_from_summary),
+         t = map_dbl(t_test, "statistic"),
+         p_value = map_dbl(t_test, "p.value"))
+
 dat_erst_winneronly_dw <- 
   dat_erst %>%
   group_by(wkr) %>%
@@ -96,7 +124,9 @@ dat_erst_winneronly_dw <-
   separate("6",into = c("second-place-party", "second-place-votes", "second"),"_") %>%
   mutate(outcome = ifelse(`first-place-votes` == `second-place-votes`, 'Kopf-an-Kopf', `first-place-party`)) %>%
   relocate("outcome", "first-place-party", "first-place-votes", "winner", .before = "second-place-party") %>% 
-  ungroup()
+  ungroup() %>% 
+  # add t-test statistic
+  inner_join(dat_erst_ttest, by = "wkr")
 ```
 
 ## Kombinierte Datensätze
@@ -117,7 +147,7 @@ dat_winneronly_grid <-
 ## Setup
 
 ```{r}
-theme_set(theme_void(base_size = 16, base_family = "Editorial New"))
+theme_set(theme_void(base_size = 16, base_family = "Noto Serif"))
 theme_update(legend.margin = margin(0, 0, 0, 25),
              legend.text = element_text(margin = margin(5, 0, 5, 0)),
              plot.title = element_text(hjust = .5, face = "bold", 
@@ -190,6 +220,8 @@ ggsave(here::here("plots", "bubble_map_var.pdf"), width = 10, height = 13, devic
 
 ## Bubble Map inkl. Vorsprung als Farbintensität
 
+### Vorsprung in Prozentpunkten
+
 ```{r variant-vorsprung}
 ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
@@ -215,6 +247,37 @@ ggsave(here::here("plots", "bubble_map_diff.pdf"), width = 10, height = 13, devi
 ```
 
 
+### Vorsprung als t-Statistik
+
+```{r variant-vorsprung-ttest}
+ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg, 
+        # alpha = diff
+        alpha = t # Ergebnis t-Test (oder p-value stattdessen?)
+        ), 
+    size = 9, shape = 21, stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 9, shape = 21, stroke = 2, fill = "transparent"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
+  theme(legend.position = c(.87, .25)) +
+  labs(title = title, caption = caption,
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
+
+
+
 ## Bubble Map inkl. Grenzen der Bundesländer (trial)
 
 ```{r variant-states-ggforce}
@@ -238,7 +301,127 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
 ggsave(here::here("plots", "bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
-## Interaktive Verison via {ggiraph}
+
+
+## Bubble Map mit verschiedenen Punktgrößen für Bundesländer (trial)
+
+*Weder effektiv noch schön.*
+
+```{r variant-vorsprung-mark-size}
+
+# Größenkategorien für Bundesländer
+bland_group_mapping <- c(
+  "Schleswig-Holstein" = "A",
+  "Mecklenburg-Vorpommern" = "B",
+  "Hamburg" = "D",
+  "Niedersachsen" = "C",
+  "Bremen" = "E",
+  "Brandenburg" = "A",
+  "Sachsen-Anhalt" = "D",
+  "Berlin" = "A",
+  "Nordrhein-Westfalen" = "D",
+  "Sachsen" = "A",
+  "Hessen" = "E",
+  "Thüringen" = "B",
+  "Rheinland-Pfalz" = "A",
+  "Bayern" = "D",
+  "Baden-Württemberg" = "B",
+  "Saarland" = "A"
+)
+
+dat_winneronly_grid %>% 
+  mutate(mark_group = bland_group_mapping[land],
+         mark_shape = case_when(
+           mark_group == "A" ~ 21,
+           mark_group == "B" ~ 22,
+           mark_group == "C" ~ 23,
+           mark_group == "D" ~ 24,
+           mark_group == "E" ~ 25,
+         )) %>% 
+  ggplot(aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg, alpha = diff, size = mark_group), 
+    # size = 9, 
+    shape = 21, 
+    stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg, size = mark_group), 
+    # size = 9, 
+    shape = 21, 
+    stroke = 2, fill = "transparent"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  scale_size_discrete(range = c(7, 11)) +
+  # scale_shape_identity() +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9)),
+         size = "none") +
+  theme(legend.position = c(.87, .25)) +
+  labs(title = title, caption = caption,
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff_bland_mark.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+```
+
+
+
+## Bubble Map inkl. Vorsprung als Farbintensität - mit Städten zur Orientierung
+
+```{r variant-vorsprung-location-hints}
+
+constituencies_to_highlight <- c(
+  18, # Hamburg-Mitte
+  75, # Berlin-Mitte
+  93, # Köln I
+  220 # München-West/Mitte
+)
+
+df_constituencies_highlight <- dat_winneronly_grid %>% 
+  filter(wkr %in% constituencies_to_highlight) %>% 
+  mutate(name_short = str_extract(Wahlkreisname, "[a-zA-ZäöüÄÖÜ]+")) %>% 
+  select(name_short, name, col, row)
+
+
+ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg, alpha = diff), 
+    size = 9, shape = 21, stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 9, shape = 21, stroke = 2, fill = "transparent"
+  ) +
+  geom_label(data = df_constituencies_highlight,
+             aes(label = name_short),
+             col = "grey99",
+             fill = "grey10", alpha = 0.35, family = "Roboto",
+             label.size = 0, 
+             fontface = "bold", size = 7,
+             hjust = 0.5) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
+  theme(legend.position = c(.87, .25)) +
+  labs(title = title, caption = caption,
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
+
+
+
+
+## Interaktive Version via {ggiraph}
 
 ```{r, interactive-version}
 library(ggiraph)
@@ -262,7 +445,7 @@ g_interactive <- dat_winneronly_grid %>%
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(color = guide_legend(override.aes = list(size = 6)))
 
-tooltip_css <- "background-color:#515151;color:white;font-family:roboto;padding:10px;border-radius:5px;"
+tooltip_css <- "background-color:#515151;color:white;font-family:Roboto;padding:10px;border-radius:5px;"
 
 girafe(ggobj = g_interactive, 
        width_svg = 12, height_svg = 12, 
