@@ -214,14 +214,13 @@ Wahlkreisname,row,col
 206 Worms,18,5
 209 Kaiserslautern,18,4
 201 Kreuznach,18,3
-275 Mannheim,18,6
 243 Fürth,18,9
 242 Erlangen,18,10
 244 Nürnberg-Nord,18,11
 232 Amberg,18,12
 234 Schwandorf,18,13
 297 Saarlouis,18,2
-186 Darmstadt,19,6
+275 Mannheim,19,6
 187 Odenwald,19,7
 207 Ludwigshafen/Frankenthal,19,5
 298 St. Wendel,19,3
@@ -232,8 +231,9 @@ Wahlkreisname,row,col
 246 Roth,19,12
 245 Nürnberg-Süd,19,11
 241 Ansbach,19,10
-274 Heidelberg,20,8
 296 Saarbrücken,19,2
+186 Darmstadt,18,6
+274 Heidelberg,20,8
 299 Homburg,20,3
 210 Pirmasens,20,4
 277 Rhein-Neckar,20,6

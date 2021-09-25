@@ -38,35 +38,35 @@ pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled", 
 #write_csv(dat_erst_winneronly_dw %>% dplyr::select(Wahlkreisname), here::here("data", "wk.csv"))
 
 ## Grid Preparation für Labels und Bundesländer
-# grid <- 
-#   read_csv(here::here("data", "wk_grid_b.csv")) %>% 
-#   mutate(
-#     id = str_sub(Wahlkreisname, 1, 3),
-#     id_num = as.numeric(id),
-#     wk = str_sub(Wahlkreisname, 5, nchar(Wahlkreisname)),
-#     land = case_when(
-#       id_num %in% 1:11 ~ "Schleswig-Holstein",
-#       id_num %in% 12:17 ~ "Mecklenburg-Vorpommern",
-#       id_num %in% 18:23 ~ "Hamburg",
-#       id_num %in% 24:53 ~ "Niedersachsen",
-#       id_num %in% 54:55 ~ "Bremen",
-#       id_num %in% 56:65 ~ "Brandenburg",
-#       id_num %in% 66:74 ~ "Sachsen-Anhalt",
-#       id_num %in% 75:86 ~ "Berlin",
-#       id_num %in% 87:150 ~ "Nordrhein-Westfalen",
-#       id_num %in% 151:166 ~ "Sachsen",
-#       id_num %in% 167:188 ~ "Hessen",
-#       id_num %in% 189:196 ~ "Thüringen",
-#       id_num %in% 197:211 ~ "Rheinland-Pfalz",
-#       id_num %in% 212:257 ~ "Bayern",
-#       id_num %in% 258:295 ~ "Baden-Württemberg",
-#       id_num %in% 296:299 ~ "Saarland"
-#     )
-#   )
-# 
-# write_csv(grid, here::here("data", "de_constituencies_grid_b.csv"))
+grid <-
+  read_csv(here::here("data", "wk_grid_raw.csv")) %>%
+  mutate(
+    id = str_sub(Wahlkreisname, 1, 3),
+    id_num = as.numeric(id),
+    wk = str_sub(Wahlkreisname, 5, nchar(Wahlkreisname)),
+    land = case_when(
+      id_num %in% 1:11 ~ "Schleswig-Holstein",
+      id_num %in% 12:17 ~ "Mecklenburg-Vorpommern",
+      id_num %in% 18:23 ~ "Hamburg",
+      id_num %in% 24:53 ~ "Niedersachsen",
+      id_num %in% 54:55 ~ "Bremen",
+      id_num %in% 56:65 ~ "Brandenburg",
+      id_num %in% 66:74 ~ "Sachsen-Anhalt",
+      id_num %in% 75:86 ~ "Berlin",
+      id_num %in% 87:150 ~ "Nordrhein-Westfalen",
+      id_num %in% 151:166 ~ "Sachsen",
+      id_num %in% 167:188 ~ "Hessen",
+      id_num %in% 189:196 ~ "Thüringen",
+      id_num %in% 197:211 ~ "Rheinland-Pfalz",
+      id_num %in% 212:257 ~ "Bayern",
+      id_num %in% 258:295 ~ "Baden-Württemberg",
+      id_num %in% 296:299 ~ "Saarland"
+    )
+  )
 
-grid <- read_csv(here::here("data", "de_constituencies_grid_b.csv"))
+write_csv(grid, here::here("data", "de_constituencies_grid.csv"))
+
+grid <- read_csv(here::here("data", "de_constituencies_grid.csv"))
 ```
 
 
@@ -174,6 +174,25 @@ caption <- "Grafik: Cédric Scherer & Ansgar Wolsing\nDaten: Kayser, Leininger, 
 title <- "Bürger*innenvorhersage der Direktmandatsgewinner*innen\nin den Wahlkreisen zur Bundestagswahl 2021"
 ```
 
+
+## Bundesländer
+
+```{r map-bundesländer}
+set.seed(1)
+pal <- sample(viridis::turbo(n = 16))
+
+ggplot(grid, aes(col, row, color = land, fill = land)) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + .5)) +
+  scale_y_reverse() +
+  scale_color_manual(values = pal, name = NULL) +
+  scale_fill_manual(values = pal, name = NULL) + 
+  theme(plot.margin = margin(15, 10, 15, 0)) +
+  labs(caption = "Grafik: Cédric Scherer & Ansgar Wolsing")
+
+ggsave(here::here("plots", "grid_länder.pdf"), width = 10, height = 9, device = cairo_pdf)
+```
 
 ## Bubble Map
 

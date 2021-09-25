@@ -214,14 +214,13 @@ Wahlkreisname,row,col,id,id_num,wk,land
 206 Worms,18,5,206,206,Worms,Rheinland-Pfalz
 209 Kaiserslautern,18,4,209,209,Kaiserslautern,Rheinland-Pfalz
 201 Kreuznach,18,3,201,201,Kreuznach,Rheinland-Pfalz
-275 Mannheim,18,6,275,275,Mannheim,Baden-Württemberg
 243 Fürth,18,9,243,243,Fürth,Bayern
 242 Erlangen,18,10,242,242,Erlangen,Bayern
 244 Nürnberg-Nord,18,11,244,244,Nürnberg-Nord,Bayern
 232 Amberg,18,12,232,232,Amberg,Bayern
 234 Schwandorf,18,13,234,234,Schwandorf,Bayern
 297 Saarlouis,18,2,297,297,Saarlouis,Saarland
-186 Darmstadt,19,6,186,186,Darmstadt,Hessen
+275 Mannheim,19,6,275,275,Mannheim,Baden-Württemberg
 187 Odenwald,19,7,187,187,Odenwald,Hessen
 207 Ludwigshafen/Frankenthal,19,5,207,207,Ludwigshafen/Frankenthal,Rheinland-Pfalz
 298 St. Wendel,19,3,298,298,St. Wendel,Saarland
@@ -232,8 +231,9 @@ Wahlkreisname,row,col,id,id_num,wk,land
 246 Roth,19,12,246,246,Roth,Bayern
 245 Nürnberg-Süd,19,11,245,245,Nürnberg-Süd,Bayern
 241 Ansbach,19,10,241,241,Ansbach,Bayern
-274 Heidelberg,20,8,274,274,Heidelberg,Baden-Württemberg
 296 Saarbrücken,19,2,296,296,Saarbrücken,Saarland
+186 Darmstadt,18,6,186,186,Darmstadt,Hessen
+274 Heidelberg,20,8,274,274,Heidelberg,Baden-Württemberg
 299 Homburg,20,3,299,299,Homburg,Saarland
 210 Pirmasens,20,4,210,210,Pirmasens,Rheinland-Pfalz
 277 Rhein-Neckar,20,6,277,277,Rhein-Neckar,Baden-Württemberg
