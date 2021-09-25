@@ -147,7 +147,7 @@ dat_winneronly_grid <-
 ## Setup
 
 ```{r}
-theme_set(theme_void(base_size = 16, base_family = "Noto Serif"))
+theme_set(theme_void(base_size = 16, base_family = "Noto Serif")) #Editorial New
 theme_update(legend.margin = margin(0, 0, 0, 25),
              legend.text = element_text(margin = margin(5, 0, 5, 0)),
              plot.title = element_text(hjust = .5, face = "bold", 
@@ -273,7 +273,7 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   labs(title = title, caption = caption,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here::here("plots", "bubble_map_diff.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here::here("plots", "bubble_map_diff_t.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -423,6 +423,54 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
 ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
+### Städtenamen als Labels
+
+```{r variant-vorsprung-location-hints-1}
+labels <- dat_winneronly_grid %>% 
+  filter(str_detect(wk, "München|Köln") | land %in% c("Berlin", "Hamburg")) %>% 
+  filter(wk != "München-Land") %>% 
+  mutate(label = case_when(
+    str_detect(wk, "München") ~ "München",
+    str_detect(wk, "Köln") ~ "Köln",
+    TRUE ~ land
+  ))
+
+
+ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_tile(
+    data = labels,
+    fill = "grey60", color = "grey60"
+  ) +
+  geom_point(
+    fill = "white", size = 9, shape = 21, stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(fill = outcome_agg, alpha = diff), 
+    size = 9, shape = 21, stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 9, shape = 21, stroke = 2, fill = "transparent"
+  ) +
+  # ggforce::geom_mark_hull(
+  #   data = labels,
+  #   aes(group = label),
+  #   concavity = 0
+  # ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
+  theme(legend.position = c(.87, .25)) +
+  labs(title = title, caption = caption,
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff_location_highlights_ggforce.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
+
 
 
 ## Interaktive Version via {ggiraph}
@@ -529,9 +577,6 @@ ggsave(here::here("plots", "hexagon_map_diff_location_highlights.pdf"), width = 
 
 
 ***
-
-
-
 
 
 <details><summary>Session Info</summary>
