@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE,
 # Setup
 
 ```{r prep}
-pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled")
+pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled", "sf")
 ```
 
 
@@ -424,38 +424,6 @@ ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 1
 ```
 
 
-### Städtenamen im Shape
-
-```{r variant-vorsprung-location-hints-2}
-
-ggplot(dat_winneronly_grid, aes(col, row)) +
-  geom_point(
-    aes(fill = outcome_agg, alpha = diff), 
-    size = 9, shape = 21, stroke = 2, color = "transparent"
-  ) +
-  geom_point(
-    aes(color = outcome_agg), 
-    size = 9, shape = 21, stroke = 2, fill = "transparent"
-  ) +
-  geom_text(data = df_constituencies_highlight,
-             aes(label = name_short),
-             col = "grey2",
-             family = "Roboto", size = 3,
-             hjust = 0.5) +
-  coord_fixed() +
-  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
-  scale_alpha(range = c(0, .86), guide = "none") +
-  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
-  theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
-       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
-
-ggsave(here::here("plots", "bubble_map_diff_location_highlights-2.pdf"), width = 10, height = 13, device = cairo_pdf)
-```
-
 
 ## Interaktive Version via {ggiraph}
 
@@ -492,7 +460,79 @@ girafe(ggobj = g_interactive,
 #ggsave(here::here("plots", "bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
+
+## Hexagon Tiles
+
+```{r hexagon-tiles}
+
+## READ GEOMETRY ==============================================
+#' https://pitchinteractiveinc.github.io/tilegrams/
+#' Download geometry "Germany - Constituencies" as TopoJSON
+#' and place it in the data directory
+filepath_topo <- here("data", "tiles.topo.json")
+wk_topo <- geojsonio::topojson_read(filepath_topo)
+wk_topo <- wk_topo %>% mutate(id = as.numeric(id))
+
+# Merge shapes of constituencies into state-level shapes 
+bland_shape <- wk_topo %>% 
+  inner_join(dat_winneronly_grid, by = c("id" = "wkr")) %>% 
+  group_by(land) %>% 
+  summarize(geometry = st_union(geometry))
+
+df_constituencies_highlight_hex <- wk_topo %>% 
+  filter(id %in% constituencies_to_highlight) %>% 
+  mutate(geometry = st_make_valid(geometry) %>% 
+           st_centroid(),
+         lon = map(geometry, 1),
+         lat = map(geometry, 2),
+         name_short = str_extract(name, "[a-zA-ZäöüÄÖÜ]+"))
+
+```
+
+
+```{r hexagon}
+
+dat_winneronly_grid %>% 
+  inner_join(wk_topo, by = c("wkr" = "id")) %>% 
+  ggplot(aes(geometry = geometry)) +
+  geom_sf(aes(fill = outcome_agg, col = outcome_agg, alpha = t),
+          size = 0.1, # col = "grey80"
+          ) +
+  geom_sf_text(aes(label = id),
+               size = 1.75) +
+  geom_sf(data = bland_shape,
+          aes(geometry = geometry, 
+              group = land),
+          fill = NA, col = "grey96",
+          size = 1.5, show.legend = FALSE) +
+  geom_sf_label(data = df_constituencies_highlight_hex,
+             aes(lon, lat, label = name_short),
+             col = "grey99",
+             fill = "grey10", alpha = 0.4, family = "Roboto",
+             label.size = 0,
+             fontface = "bold", size = 6,
+             hjust = 0.5) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 0.25, alpha = .5))) +
+  theme(legend.position = c(.08, .15),
+        legend.key.size = unit(5, "mm")) +
+  labs(title = title, 
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
+       caption = glue("{caption}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
+    
+    
+ggsave(here::here("plots", "hexagon_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+``` 
+
+
 ***
+
+
+
+
 
 <details><summary>Session Info</summary>
 
