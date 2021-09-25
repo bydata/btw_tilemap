@@ -1,6 +1,6 @@
 pacman::p_load("tidyverse", "sf", "geojsonsf", "here")
 
-grid <- read_csv(here::here("data", "de_constituencies_grid_b.csv"))
+grid <- read_csv(here::here("data", "de_constituencies_grid.csv"))
 str(grid)
 
 grid_sf_points <- grid %>% 
@@ -15,4 +15,4 @@ ggplot(grid_sf_points) +
 #' Convert sf objects to GeoJSON
 #' https://cran.r-project.org/web/packages/geojsonsf/vignettes/geojson-sf-conversions.html#what-it-does
 grid_geojson_pts <- sf_geojson(grid_sf_points)
-write_file(grid_geojson_pts, here("data", "de_constituencies_grid_b.geojson.json"))
+write_file(grid_geojson_pts, here("data", "de_constituencies_grid.geojson.json"))
