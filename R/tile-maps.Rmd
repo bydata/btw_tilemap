@@ -373,8 +373,7 @@ ggsave(here::here("plots", "bubble_map_diff_bland_mark.pdf"), width = 10, height
 
 ## Bubble Map inkl. Vorsprung als Farbintensität - mit Städten zur Orientierung
 
-```{r variant-vorsprung-location-hints}
-
+```{r}
 constituencies_to_highlight <- c(
   18, # Hamburg-Mitte
   75, # Berlin-Mitte
@@ -387,6 +386,12 @@ df_constituencies_highlight <- dat_winneronly_grid %>%
   mutate(name_short = str_extract(Wahlkreisname, "[a-zA-ZäöüÄÖÜ]+")) %>% 
   select(name_short, name, col, row)
 
+```
+
+
+### Städtenamen als Overlay
+
+```{r variant-vorsprung-location-hints-1}
 
 ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
@@ -400,9 +405,9 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_label(data = df_constituencies_highlight,
              aes(label = name_short),
              col = "grey99",
-             fill = "grey10", alpha = 0.35, family = "Roboto",
+             fill = "grey10", alpha = 0.4, family = "Roboto",
              label.size = 0, 
-             fontface = "bold", size = 7,
+             fontface = "bold", size = 6,
              hjust = 0.5) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
@@ -419,6 +424,37 @@ ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 1
 ```
 
 
+### Städtenamen im Shape
+
+```{r variant-vorsprung-location-hints-2}
+
+ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg, alpha = diff), 
+    size = 9, shape = 21, stroke = 2, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 9, shape = 21, stroke = 2, fill = "transparent"
+  ) +
+  geom_text(data = df_constituencies_highlight,
+             aes(label = name_short),
+             col = "grey2",
+             family = "Roboto", size = 3,
+             hjust = 0.5) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse() +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
+  theme(legend.position = c(.87, .25)) +
+  labs(title = title, caption = caption,
+       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff_location_highlights-2.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
 
 
 ## Interaktive Version via {ggiraph}
