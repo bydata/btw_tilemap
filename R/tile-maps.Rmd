@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE,
 # Setup
 
 ```{r prep}
-pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled", "sf")
+pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled", "sf", "pdftools")
 ```
 
 
@@ -137,7 +137,8 @@ dat_winneronly_grid <-
   left_join(grid) %>% 
   mutate(
     outcome_agg = ifelse(outcome %in% c("CDU", "CSU"), "CDU/CSU", outcome),
-    diff = as.numeric(`first-place-votes`) - as.numeric(`second-place-votes`)
+    diff = as.numeric(`first-place-votes`) - as.numeric(`second-place-votes`),
+    outcome_agg = factor(outcome_agg, levels = c("CDU/CSU", "SPD", "Grüne", "Linke", "AfD", "Kopf-an-Kopf"))
   )
 ```
 
@@ -147,7 +148,7 @@ dat_winneronly_grid <-
 ## Setup
 
 ```{r}
-theme_set(theme_void(base_size = 16, base_family = "Noto Serif")) #Editorial New
+theme_set(theme_void(base_size = 16, base_family = "Editorial New")) #Editorial New, Noto Serif
 theme_update(legend.margin = margin(0, 0, 0, 25),
              legend.text = element_text(margin = margin(5, 0, 5, 0)),
              plot.title = element_text(hjust = .5, face = "bold", 
@@ -157,7 +158,7 @@ theme_update(legend.margin = margin(0, 0, 0, 25),
              plot.title.position = "plot",
              plot.caption = element_text(hjust = 0, color = "grey40", 
                                          lineheight = 1.3,
-                                         size = 10, margin = margin(20, 0, 5, 0)),
+                                         size = 9, margin = margin(20, 0, 5, 0)),
              plot.caption.position = "plot",
              plot.margin = margin(10, 0, 10, 0))
 
@@ -165,57 +166,139 @@ theme_update(legend.margin = margin(0, 0, 0, 25),
 party_colors <- c("CDU/CSU" = "grey9",
                   #"CSU" = "grey18",
                   "SPD" = "#ca0002", ## "#E3000F",  a bit darker now to make it work with CVD
-                  "AfD" = rgb(0, 158, 224, maxColorValue = 255),
-                  "FDP" = darken("#ffed00", 0.1),
+                  "Grüne" = rgb(100, 161, 45, maxColorValue = 255),
+                  #"FDP" = darken("#ffed00", 0.1),
                   "Linke" = "purple",
-                  "Grüne" = rgb(100, 161, 45, maxColorValue = 255))
+                  "AfD" = rgb(0, 158, 224, maxColorValue = 255))
 
-caption <- "Grafik: Cédric Scherer & Ansgar Wolsing\nDaten: Kayser, Leininger, Murr & Stötzer (2021) Citizens’ Forecast for the 2021 German National Election (aleininger.eu/citizens_forecast2021)"
-title <- "Bürger*innenvorhersage der Direktmandatsgewinner*innen\nin den Wahlkreisen zur Bundestagswahl 2021"
+caption_de <- "Grafik: Cédric Scherer & Ansgar Wolsing\nDaten: Kayser, Leininger, Murr & Stötzer (2021) Citizens’ Forecast for the 2021 German National Election (aleininger.eu/citizens_forecast2021)\nDie Karte basiert auf einer Befragung einer nicht-repräsentativen Stichprobe von Bürger*innen in allen 299 Wahlkreisen zu den Erfolgsaussichten des*der Kandidierenden*in."
+title_de <- "Bürger*innenvorhersage der Direktmandatsgewinner*innen\nin den Wahlkreisen zur Bundestagswahl 2021"
+
+caption_en <- "Graphic: Cédric Scherer & Ansgar Wolsing\nData: Kayser, Leininger, Murr & Stötzer (2021) Citizens’ Forecast for the 2021 German National Election (aleininger.eu/citizens_forecast2021)\nThe map is based on a survey of a non-representative sample of citizens in all 299 Bundestag constituencies on the candidates' chances of success."
+title_en <- "Citizens’ Forecast of Direct Mandate Winners in\nthe Constituencies for the 2021 Federal Election"
+
+parties_en <- c("CDU/CSU", "SPD", "The Greens", "The Left", "AFD", "Too close to call")
 ```
+
 
 
 ## Bundesländer
 
-```{r map-bundesländer}
-set.seed(1)
-pal <- sample(viridis::turbo(n = 16))
+```{r map-bundesländer, fig.wdith=10, fig.height=10}
+set.seed(1234567890)
+pal <- sample(ggsci::pal_simpsons()(16))
 
-ggplot(grid, aes(col, row, color = land, fill = land)) +
-  geom_tile() +
+g <- 
+  ggplot(grid, aes(col, row, color = land, fill = land)) +
+  geom_tile(size = 3, color = "#212121") +
+  geom_tile(size = .01) +
   coord_fixed() +
-  scale_x_continuous(limits = c(-.5, max(grid$col) + .5)) +
-  scale_y_reverse() +
+  scale_x_continuous(expand = c(.01, .01), limits = c(-.5, max(grid$col) + .5)) +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = pal, name = NULL) +
   scale_fill_manual(values = pal, name = NULL) + 
-  theme(plot.margin = margin(15, 10, 15, 0)) +
-  labs(caption = "Grafik: Cédric Scherer & Ansgar Wolsing")
+  theme(plot.margin = margin(15, 10, 15, 0))
 
-ggsave(here::here("plots", "grid_länder.pdf"), width = 10, height = 9, device = cairo_pdf)
+## Deutsche Version
+g + labs(title = "Tile Grid Karte der Wahlkreise Deutschland", caption = "Grafik: Cédric Scherer & Ansgar Wolsing")
+ggsave(here::here("plots", "grid_laender_de.pdf"), width = 10, height = 10, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = "Tile Grid Map of Germany's Constituencies", caption = "Design: Cédric Scherer & Ansgar Wolsing")
+ggsave(here::here("plots", "grid_laender_en.pdf"), width = 10, height = 10, device = cairo_pdf)
 ```
 
-## Bubble Map
+## Grid Tile Map
 
-```{r bubble-map}
-ggplot(dat_winneronly_grid, aes(col, row)) +
-  geom_point(aes(color = outcome_agg), size = 10) +
+```{r grid-map}
+g <- ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(aes(color = outcome_agg), size = 12, shape = 15) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
                      name = NULL) +
   guides(color = guide_legend(override.aes = list(size = 6))) +
-  theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption)
+  theme(legend.position = c(.87, .25))
 
-ggsave(here::here("plots", "bubble_map.pdf"), width = 10, height = 13, device = cairo_pdf)
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de)
+ggsave(here::here("plots", "grid_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, caption = caption_en) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en)
+ggsave(here::here("plots", "grid_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
 ### Variante mit gedämpfteren Farben für die Füllung der Punkte
 
-```{r variant-lighter-fill}
-ggplot(dat_winneronly_grid, aes(col, row)) +
+```{r variant-grid-lighter-fill}
+g <- 
+  ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg), 
+    size = 11.5, shape = 22, stroke = 1.5, alpha = .5, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 11.5, shape = 22, stroke = 1.5, fill = "transparent"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  guides(color = guide_legend(override.aes = list(size = 6))) +
+  theme(legend.position = c(.87, .25))
+
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de)
+
+ggsave(here::here("plots", "grid_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ 
+## Englische Version
+g + labs(title = title_en, caption = caption_en) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "grid_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
+
+## Bubble Map
+
+```{r bubble-map}
+g <- ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(aes(color = outcome_agg), size = 10) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL) +
+  guides(color = guide_legend(override.aes = list(size = 6))) +
+  theme(legend.position = c(.87, .25))
+
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de)
+ggsave(here::here("plots", "bubble_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, caption = caption_en) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en)
+ggsave(here::here("plots", "bubble_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
+
+
+### Variante mit gedämpfteren Farben für die Füllung der Punkte
+
+```{r variant-bubble-lighter-fill}
+g <- 
+  ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
     aes(fill = outcome_agg), 
     size = 10, shape = 21, stroke = 2, alpha = .5, color = "transparent"
@@ -226,23 +309,76 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   guides(color = guide_legend(override.aes = list(size = 6))) +
-  theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption)
+  theme(legend.position = c(.87, .25))
 
-ggsave(here::here("plots", "bubble_map_var.pdf"), width = 10, height = 13, device = cairo_pdf)
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de)
+
+ggsave(here::here("plots", "bubble_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ 
+## Englische Version
+g + labs(title = title_en, caption = caption_en) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "bubble_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
+
+## Grid Map inkl. Vorsprung als Farbintensität
+
+### Vorsprung in Prozentpunkten
+
+```{r variant-grid-vorsprung}
+g <- 
+  ggplot(dat_winneronly_grid, aes(col, row)) +
+  geom_point(
+    aes(fill = outcome_agg, alpha = diff), 
+    size = 11.5, shape = 22, stroke = 1.5, color = "transparent"
+  ) +
+  geom_point(
+    aes(color = outcome_agg), 
+    size = 11.5, shape = 22, stroke = 1.5, fill = "transparent"
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
+  theme(legend.position = c(.87, .25))
+
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de,
+         subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "grid_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, caption = caption_en,
+         subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "grid_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+```
 
 ## Bubble Map inkl. Vorsprung als Farbintensität
 
 ### Vorsprung in Prozentpunkten
 
-```{r variant-vorsprung}
-ggplot(dat_winneronly_grid, aes(col, row)) +
+```{r variant-bubble-vorsprung}
+g <- 
+  ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
     aes(fill = outcome_agg, alpha = diff), 
     size = 9, shape = 21, stroke = 2, color = "transparent"
@@ -253,23 +389,36 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
-  theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
-       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+  theme(legend.position = c(.87, .25))
 
-ggsave(here::here("plots", "bubble_map_diff.pdf"), width = 10, height = 13, device = cairo_pdf)
+## Deutsche Version
+g + labs(title = title_de, caption = caption_de,
+         subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, caption = caption_en,
+         subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "bubble_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
 ### Vorsprung als t-Statistik
 
 ```{r variant-vorsprung-ttest}
-ggplot(dat_winneronly_grid, aes(col, row)) +
+g <- 
+  ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
     aes(fill = outcome_agg, 
         # alpha = diff
@@ -283,23 +432,37 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
-  theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
-       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+  theme(legend.position = c(.87, .25))
 
-ggsave(here::here("plots", "bubble_map_diff_t.pdf"), width = 10, height = 13, device = cairo_pdf)
+## Deutsche Version
+g + labs(title = title_de, caption = glue("{caption_de}\nDie Vorhersage der Mandatsgewinner basiert auf einem t-Test auf Basis von Mittelwert und Standardabweichung."),
+         subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
+
+ggsave(here::here("plots", "bubble_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, caption = glue("{caption_en}\nThe prediction of mandate winners is based on a t-test based on mean and standard deviation."),
+         subtitle = "The more intense the coloring, the greater the predicted lead.") +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "bubble_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
 
 ## Bubble Map inkl. Grenzen der Bundesländer (trial)
 
-```{r variant-states-ggforce}
+*Leider nicht so schön und sinnvoll wie erhofft.*
+
+```{r variant-states-ggforce, eval=FALSE}
 ggplot(dat_winneronly_grid, aes(col, row)) +
   ggforce::geom_mark_hull(
     aes(group = land), 
@@ -309,13 +472,13 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(aes(color = outcome_agg), size = 7) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
                      name = NULL) +
   guides(color = guide_legend(override.aes = list(size = 6))) +
   theme(legend.position = c(.87, .25),
         plot.background = element_rect(color = "grey67", fill = "grey67")) +
-  labs(title = title, caption = caption)
+  labs(title = title_de, caption = caption_de)
 
 ggsave(here::here("plots", "bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
@@ -326,8 +489,7 @@ ggsave(here::here("plots", "bubble_map_states.pdf"), width = 10, height = 13, de
 
 *Weder effektiv noch schön.*
 
-```{r variant-vorsprung-mark-size}
-
+```{r variant-vorsprung-mark-size, eval=FALSE}
 # Größenkategorien für Bundesländer
 bland_group_mapping <- c(
   "Schleswig-Holstein" = "A",
@@ -372,7 +534,7 @@ dat_winneronly_grid %>%
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
@@ -381,18 +543,17 @@ dat_winneronly_grid %>%
   guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9)),
          size = "none") +
   theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
+  labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
 ggsave(here::here("plots", "bubble_map_diff_bland_mark.pdf"), width = 10, height = 13, device = cairo_pdf)
-
 ```
 
 
 
 ## Bubble Map inkl. Vorsprung als Farbintensität - mit Städten zur Orientierung
 
-```{r}
+```{r map-lead-label}
 constituencies_to_highlight <- c(
   18, # Hamburg-Mitte
   75, # Berlin-Mitte
@@ -404,14 +565,12 @@ df_constituencies_highlight <- dat_winneronly_grid %>%
   filter(wkr %in% constituencies_to_highlight) %>% 
   mutate(name_short = str_extract(Wahlkreisname, "[a-zA-ZäöüÄÖÜ]+")) %>% 
   select(name_short, name, col, row)
-
 ```
 
 
 ### Städtenamen als Overlay
 
-```{r variant-vorsprung-location-hints-1}
-
+```{r variant-vorsprung-location-hints-1, eval=FALSE}
 ggplot(dat_winneronly_grid, aes(col, row)) +
   geom_point(
     aes(fill = outcome_agg, alpha = diff), 
@@ -430,13 +589,13 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
              hjust = 0.5) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
   theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
+  labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
 ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
@@ -444,7 +603,7 @@ ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 1
 
 ### Städtenamen als Labels
 
-```{r variant-vorsprung-location-hints-1}
+```{r variant-vorsprung-location-hints-2, eval=FALSE}
 labels <- dat_winneronly_grid %>% 
   filter(str_detect(wk, "München|Köln") | land %in% c("Berlin", "Hamburg")) %>% 
   filter(wk != "München-Land") %>% 
@@ -478,13 +637,13 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   # ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(fill = guide_legend(override.aes = list(size = 6, alpha = .9))) +
   theme(legend.position = c(.87, .25)) +
-  labs(title = title, caption = caption,
+  labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
 ggsave(here::here("plots", "bubble_map_diff_location_highlights_ggforce.pdf"), width = 10, height = 13, device = cairo_pdf)
@@ -510,11 +669,12 @@ g_interactive <- dat_winneronly_grid %>%
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 2)) +
-  scale_y_reverse() +
+  scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
-  guides(color = guide_legend(override.aes = list(size = 6)))
+  guides(color = guide_legend(override.aes = list(size = 6))) +
+  labs(title = title_de, caption = caption_de)
 
 tooltip_css <- "background-color:#515151;color:white;font-family:Roboto;padding:10px;border-radius:5px;"
 
@@ -531,7 +691,6 @@ girafe(ggobj = g_interactive,
 ## Hexagon Tiles
 
 ```{r hexagon-tiles}
-
 ## READ GEOMETRY ==============================================
 #' https://pitchinteractiveinc.github.io/tilegrams/
 #' Download geometry "Germany - Constituencies" as TopoJSON
@@ -553,57 +712,133 @@ df_constituencies_highlight_hex <- wk_topo %>%
          lon = map(geometry, 1),
          lat = map(geometry, 2),
          name_short = str_extract(name, "[a-zA-ZäöüÄÖÜ]+"))
-
 ```
 
 
-```{r hexagon}
 
-dat_winneronly_grid %>% 
+
+```{r hexagon}
+g <- dat_winneronly_grid %>% 
+  inner_join(wk_topo, by = c("wkr" = "id")) %>% 
+  ggplot(aes(geometry = geometry)) +
+  geom_sf(aes(fill = outcome_agg, col = outcome_agg, alpha = diff),
+          size = 0.1, # col = "grey80"
+          ) +
+  geom_sf_text(aes(label = id),
+               size = 2.5, family = "Roboto Mono") +
+  geom_sf(data = bland_shape,
+          aes(geometry = geometry, 
+              group = land),
+          fill = NA, col = "grey96",
+          size = 2, show.legend = FALSE) +
+  geom_sf(aes(col = outcome_agg),
+          size = 0.1, fill = "transparent"
+          ) +
+  # geom_sf_label(data = df_constituencies_highlight_hex,
+  #            aes(lon, lat, label = name_short),
+  #            col = "grey99",
+  #            fill = "grey10", alpha = 0.4, family = "Roboto",
+  #            label.size = 0,
+  #            fontface = "bold", size = 6,
+  #            hjust = 0.5) +
+  #scale_x_continuous(limits = c(NA, )) +
+  scale_y_continuous(expand = c(.01, .01)) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
+  scale_alpha(range = c(0, .86), guide = "none") +
+  guides(fill = guide_legend(override.aes = list(size = 0.25, alpha = .5))) +
+  theme(legend.position = c(.08, .15),
+        legend.key.size = unit(5, "mm"))
+
+## Deutsche Version
+g + labs(title = title_de, 
+         subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
+         caption = glue("{caption_de}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
+
+ggsave(here::here("plots", "hexagon_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, 
+         subtitle = "The more intense the coloring of the dots, the greater the predicted lead.",
+         caption = glue("{caption_en}\nTilegram-Geometrie: pitchinteractiveinc.github.io")) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "hexagon_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+``` 
+
+```{r hexagon-ttest}
+g <- dat_winneronly_grid %>% 
   inner_join(wk_topo, by = c("wkr" = "id")) %>% 
   ggplot(aes(geometry = geometry)) +
   geom_sf(aes(fill = outcome_agg, col = outcome_agg, alpha = t),
           size = 0.1, # col = "grey80"
           ) +
   geom_sf_text(aes(label = id),
-               size = 1.75) +
+               size = 2.5, family = "Roboto Mono") +
   geom_sf(data = bland_shape,
           aes(geometry = geometry, 
               group = land),
           fill = NA, col = "grey96",
-          size = 1.5, show.legend = FALSE) +
-  geom_sf_label(data = df_constituencies_highlight_hex,
-             aes(lon, lat, label = name_short),
-             col = "grey99",
-             fill = "grey10", alpha = 0.4, family = "Roboto",
-             label.size = 0,
-             fontface = "bold", size = 6,
-             hjust = 0.5) +
+          size = 2, show.legend = FALSE) +
+  geom_sf(aes(col = outcome_agg),
+          size = 0.1, fill = "transparent"
+          ) +
+  # geom_sf_label(data = df_constituencies_highlight_hex,
+  #            aes(lon, lat, label = name_short),
+  #            col = "grey99",
+  #            fill = "grey10", alpha = 0.4, family = "Roboto",
+  #            label.size = 0,
+  #            fontface = "bold", size = 6,
+  #            hjust = 0.5) +
+  #scale_x_continuous(limits = c(NA, )) +
+  scale_y_continuous(expand = c(.01, .01)) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")), name = NULL) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "transparent")), name = NULL) +
   scale_alpha(range = c(0, .86), guide = "none") +
   guides(fill = guide_legend(override.aes = list(size = 0.25, alpha = .5))) +
   theme(legend.position = c(.08, .15),
-        legend.key.size = unit(5, "mm")) +
-  labs(title = title, 
-       subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
-       caption = glue("{caption}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
-    
-    
-ggsave(here::here("plots", "hexagon_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
+        legend.key.size = unit(5, "mm"))
 
+## Deutsche Version
+g + labs(title = title_de, 
+         subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
+         caption = glue("{caption_de}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
+
+ggsave(here::here("plots", "hexagon_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+
+## Englische Version
+g + labs(title = title_en, 
+         subtitle = "The more intense the coloring of the dots, the greater the predicted lead.",
+         caption = glue("{caption_en}\nTilegram-Geometrie: pitchinteractiveinc.github.io")) +
+  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                     name = NULL, labels = parties_en) +
+  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+                    name = NULL, labels = parties_en)
+
+ggsave(here::here("plots", "hexagon_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ``` 
+
+
+```{r convert}
+pdfs <- list.files(here::here(), pattern = "*.pdf", recursive = TRUE)
+for(pdf in pdfs) {
+  pdf_convert(pdf = glue::glue("{here::here()}/{pdf}"), 
+              filenames = glue::glue("{here::here()}/{str_remove(pdf, '.pdf')}.png"),
+              format = "png", dpi = 500)
+}
+```
+
 
 
 ***
 
-
 <details><summary>Session Info</summary>
 
 ```{r sessionInfo}
-## DO NOT REMOVE!
 Sys.time()
-#git2r::repository() ## uncomment if you are using GitHub
 sessionInfo()
 ```
 

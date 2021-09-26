@@ -45,5 +45,5 @@ grid_geojson_pts <- sf_geojson(grid_sf_points)
 write_file(grid_geojson_pts, here("data", "de_constituencies_points.geojson.json"))
 
 
-
 ## Test it at https://geojson.io/
+
