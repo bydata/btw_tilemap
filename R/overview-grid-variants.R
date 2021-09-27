@@ -54,6 +54,10 @@ ggplot(grid, aes(col, row, color = bundesland_de, color = bundesland_de)) +
   scale_fill_manual(values = pal, guide = "none") +
   theme(plot.margin = margin(15, 10, 15, 0)) -> g3
 
-g1 + g2 + g3 + plot_layout(nrow = 1, guides = "collect") + plot_annotation(title = "Tile Grid Map of Germany's Constituencies", caption = "Design: Cédric Scherer & Ansgar Wolsing")
+g1 + g2 + g3 + plot_layout(nrow = 1, guides = "collect") + plot_annotation(title = "Tile Grid Map of the 299 Constituencies of Germany", caption = "Design: Cédric Scherer & Ansgar Wolsing")
 
 ggsave(here::here("plots", "grid_laender_variants.pdf"), width = 25, height = 15.5, device = cairo_pdf)
+
+pdf_convert(pdf = here::here("plots", "grid_laender_variants.pdf"), 
+            filenames = here::here("plots", "grid_laender_variants.png"),
+            format = "png", dpi = 500)
