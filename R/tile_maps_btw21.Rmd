@@ -136,7 +136,7 @@ grid_btw <-
 ## Setup
 
 ```{r}
-theme_set(theme_void(base_family = "Editorial New")) #Editorial New, Noto Serif
+theme_set(theme_void(base_family = "Noto Serif")) #Editorial New, Noto Serif
 theme_update(legend.margin = margin(0, 10, 0, 25),
              legend.title = element_text(size = 16, margin = margin(15, 0, 1, 0),
                                          family = "Chivo", face = "bold"),
@@ -1142,6 +1142,190 @@ for(pdf in pdfs) {
               format = "png", dpi = 500)
 }
 ```
+
+
+
+## Trends 2021 vs. 2017
+
+### mit Wahlkreisnummern (Quadrate)
+
+```{r tile-grid-map-zweitstimme-trends-wk-1}
+
+# TODO: Chart-Titel
+
+char_arrow_up <-  "\u25B2"
+char_arrow_down <-  "\u25BC"
+char_level <- "-"
+
+parties <- list(c("CDU", "CSU"), "SPD", "Grüne", "FDP", "AfD", "Linke")
+
+for (party_selected in parties) {
+  party_selected_color <- case_when(
+    party_selected %in% c("CDU", "CSU") ~ "CDU",
+    party_selected == "Grüne" ~ "Bündnis 90/Die Grünen",
+    party_selected == "Linke" ~ "Die Linke",
+    TRUE ~ party_selected
+  )[1]
+  
+  g <- btw_clean %>% 
+    filter(party %in% party_selected) %>% 
+    select(electoral_id, name, party, second_percent, second_difference) %>% 
+    mutate(second_difference_abs = abs(second_difference)) %>% 
+    left_join(grid, by = c("electoral_id" = "id_num")) %>%  
+    ggplot(aes(col, row)) +
+    coord_fixed() +
+    scale_x_continuous(limits = c(-.5, max(grid$col) + 4)) +
+    scale_y_reverse(expand = c(.03, .03)) +
+    scale_color_manual(values = party_colors_first, name = NULL) +
+    scale_fill_manual(values = party_colors_first, name = NULL) +
+    guides(color = guide_legend(override.aes = list(size = 6)),
+           fill = guide_legend(override.aes = list(size = 6))) +
+    theme(legend.position = c(.82, .27))
+  
+  g_tile_diff <- g +
+    geom_point(
+      aes(alpha = second_difference_abs), 
+      color = party_colors[party_selected_color],
+      size = 11, shape = 15
+    ) +
+    scale_x_continuous(limits = c(-.5, max(grid$col) + 4.5)) +
+    scale_alpha(range = c(.25, 1), name = "Absolute Veränderung:", labels = scales::percent_format(scale = 1)) +
+    guides(color = guide_legend(override.aes = list(size = 8, alpha = .7), order = 1),
+           alpha = guide_legend(override.aes = list(size = 8), order = 2)) +
+    theme(legend.position = c(.83, .2))
+  
+  g_tile_diff_sign <- g_tile_diff +
+    geom_text(
+      aes(label = case_when(
+        second_difference > 0 ~ char_arrow_up,
+        second_difference < 0 ~ char_arrow_down,
+        is.na(second_difference) ~ "", # für die Grünen im Saarland
+        TRUE ~ char_level),
+          alpha = second_difference_abs),
+      color = "white",
+      size = 3.2, family = "Chivo", fontface = "bold", 
+      show.legend = FALSE
+    )
+  
+  ## Deutsche Version
+  g_tile_diff_sign +
+    labs(title = title_de, subtitle = subtitle_second_votes_de, caption = caption_de)
+  
+  ggsave(here::here("plots", "btw21", "second-votes", glue("btw21_tile_grid_map_second_trend_{party_selected[1]}_de.pdf")), 
+         width = 10, height = 11.7, device = cairo_pdf)
+  
+  ## Englische Version
+  g_tile_diff_sign + 
+    labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
+    scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+    scale_alpha(range = c(.25, 1), name = "Absolute Change:", labels = scales::percent_format(scale = 1))
+  
+   ggsave(here::here("plots", "btw21", "second-votes", glue("btw21_tile_grid_map_second_trend_{party_selected[1]}_en.pdf")), 
+         width = 10, height = 11.7, device = cairo_pdf)
+  
+}  
+  
+```
+
+
+### mit Wahlkreisnummern (Quadrate, Symbole gefärbt)
+
+```{r tile-grid-map-zweitstimme-trends-wk-2}
+
+# TODO: Chart-Titel
+
+char_arrow_up <-  "\u25B2"
+char_arrow_down <-  "\u25BC"
+char_level <- "-"
+
+parties <- list(c("CDU", "CSU"), "SPD", "Grüne", "FDP", "AfD", "Linke")
+
+
+for (party_selected in parties) {
+  party_selected_color <- case_when(
+    party_selected %in% c("CDU", "CSU") ~ "CDU",
+    party_selected == "Grüne" ~ "Bündnis 90/Die Grünen",
+    party_selected == "Linke" ~ "Die Linke",
+    TRUE ~ party_selected
+  )[1]
+  
+  g <- btw_clean %>% 
+    filter(party %in% party_selected) %>% 
+    select(electoral_id, name, party, second_percent, second_difference) %>% 
+    mutate(second_difference_abs = abs(second_difference)) %>% 
+    left_join(grid, by = c("electoral_id" = "id_num")) %>%  
+    ggplot(aes(col, row)) +
+    coord_fixed() +
+    scale_x_continuous(limits = c(-.5, max(grid$col) + 4)) +
+    scale_y_reverse(expand = c(.03, .03)) +
+    # scale_color_manual(values = party_colors_first, name = NULL) +
+    scale_fill_manual(values = party_colors_first, name = NULL) +
+    guides(color = guide_legend(override.aes = list(size = 6)),
+           fill = guide_legend(override.aes = list(size = 6))) +
+    theme(legend.position = c(.82, .27))
+  
+  g_tile_diff <- g +
+    geom_point(
+      aes(alpha = second_difference_abs), 
+      color = party_colors[party_selected_color],
+      size = 11, shape = 15
+    ) +
+    scale_x_continuous(limits = c(-.5, max(grid$col) + 4.5)) +
+    scale_alpha(range = c(.25, 1), name = "Absolute Veränderung:", labels = scales::percent_format(scale = 1)) +
+    guides(color = guide_legend(override.aes = list(size = 8, alpha = .7), order = 1),
+           alpha = guide_legend(override.aes = list(size = 8), order = 2)) +
+    theme(legend.position = c(.83, .2))
+  
+  g_tile_diff_sign <- g_tile_diff +
+    geom_text(
+      aes(label = case_when(
+        second_difference > 0 ~ char_arrow_up,
+        second_difference < 0 ~ char_arrow_down,
+        is.na(second_difference) ~ "", # für die Grünen im Saarland
+        TRUE ~ char_level),
+        color = case_when(
+        second_difference > 0 ~ "white",
+        second_difference < 0 ~ "grey8"),
+          alpha = second_difference_abs),
+      size = 3.2, family = "Chivo", fontface = "bold", 
+      show.legend = FALSE
+    ) +
+    scale_color_identity()
+  
+  ## Deutsche Version
+  g_tile_diff_sign +
+    labs(title = title_de, subtitle = subtitle_second_votes_de, caption = caption_de)
+  
+  ggsave(here::here("plots", "btw21", "second-votes", glue("btw21_tile_grid_map_second_trend_{party_selected[1]}_de.pdf")), 
+         width = 10, height = 11.7, device = cairo_pdf)
+  
+  ## Englische Version
+  g_tile_diff_sign + 
+    labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
+    scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+    scale_alpha(range = c(.25, 1), name = "Absolute Change:", labels = scales::percent_format(scale = 1))
+  
+   ggsave(here::here("plots", "btw21", "second-votes", glue("btw21_tile_grid_map_second_trend_{party_selected[1]}_en.pdf")), 
+         width = 10, height = 11.7, device = cairo_pdf)
+  
+}  
+  
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
