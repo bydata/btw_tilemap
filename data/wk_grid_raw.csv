@@ -1,49 +1,51 @@
 Wahlkreisname,row,col
-001 Flensburg – Schleswig,1,12
-002 Nordfriesland – Dithmarschen Nord,1,11
-003 Steinburg – Dithmarschen Süd,2,11
-004 Rendsburg-Eckernförde,2,12
-005 Kiel,2,13
-006 Plön – Neumünster,3,13
-009 Ostholstein – Stormarn-Nord,3,14
-007 Pinneberg,3,12
-024 Aurich – Emden,3,7
-026 Friesland – Wilhelmshaven – Wittmund,3,8
-029 Cuxhaven – Stade II,3,11
-011 Lübeck,4,15
-008 Segeberg – Stormarn-Mitte,4,14
-027 Oldenburg – Ammerland,4,8
-025 Unterems,4,7
-028 Delmenhorst – Wesermarsch – Oldenburg-Land,4,9
-030 Stade I – Rotenburg II,4,10
-020 Hamburg-Eimsbüttel,4,11
-021 Hamburg-Nord,4,12
-022 Hamburg-Wandsbek,4,13
-014 Rostock – Landkreis Rostock II,4,16
-015 Vorpommern-Rügen – Vorpommern-Greifswald I,4,17
+001 Flensburg – Schleswig,1,11
+002 Nordfriesland – Dithmarschen Nord,1,10
+003 Steinburg – Dithmarschen Süd,2,10
+004 Rendsburg-Eckernförde,2,11
+005 Kiel,2,12
+037 Lüchow-Dannenberg – Lüneburg,6,13
+006 Plön – Neumünster,3,12
+009 Ostholstein – Stormarn-Nord,3,13
+007 Pinneberg,3,11
+026 Friesland – Wilhelmshaven – Wittmund,3,7
+029 Cuxhaven – Stade II,3,10
+024 Aurich – Emden,3,6
+011 Lübeck,4,14
+008 Segeberg – Stormarn-Mitte,4,13
+027 Oldenburg – Ammerland,4,7
+028 Delmenhorst – Wesermarsch – Oldenburg-Land,4,8
+030 Stade I – Rotenburg II,4,9
+021 Hamburg-Nord,4,11
+022 Hamburg-Wandsbek,4,12
+014 Rostock – Landkreis Rostock II,4,15
+015 Vorpommern-Rügen – Vorpommern-Greifswald I,4,16
+025 Unterems,4,6
+034 Osterholz – Verden,4,10
+036 Harburg,5,10
+020 Hamburg-Eimsbüttel,5,11
 010 Herzogtum Lauenburg – Stormarn-Süd,5,14
-031 Mittelems,5,7
+031 Mittelems,5,6
 032 Cloppenburg – Vechta,5,8
 055 Bremen II – Bremerhaven,5,9
-034 Osterholz – Verden,5,10
-036 Harburg,5,11
 019 Hamburg-Altona,5,12
 018 Hamburg-Mitte,5,13
 013 Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I,5,15
 017 Mecklenburgische Seenplatte II – Landkreis Rostock III,5,16
 016 Mecklenburgische Seenplatte I – Vorpommern-Greifswald II,5,17
+038 Osnabrück-Land,5,7
+033 Diepholz – Nienburg I,6,10
 012 Schwerin – Ludwigslust-Parchim I – Nordwestmecklenburg I,6,14
-038 Osnabrück-Land,6,7
-033 Diepholz – Nienburg I,6,9
 035 Rotenburg I – Heidekreis,6,11
-054 Bremen I,6,10
-037 Lüchow-Dannenberg – Lüneburg,6,12
-023 Hamburg-Bergedorf – Harburg,6,13
+054 Bremen I,6,9
+023 Hamburg-Bergedorf – Harburg,6,12
 056 Prignitz – Ostprignitz-Ruppin – Havelland I,6,15
 058 Oberhavel – Havelland II,6,16
 057 Uckermark – Barnim I,6,17
-128 Steinfurt III,6,6
+128 Steinfurt III,6,7
 039 Stadt Osnabrück,6,8
+124 Steinfurt I – Borken I,6,6
+126 Borken II,7,5
 040 Nienburg II – Schaumburg,7,9
 041 Stadt Hannover I,7,10
 043 Hannover-Land I,7,11
@@ -52,11 +54,11 @@ Wahlkreisname,row,col
 077 Berlin-Reinickendorf,7,15
 078 Berlin-Spandau – Charlottenburg Nord,7,14
 059 Märkisch-Oderland – Barnim II,7,17
-080 Berlin-Charlottenburg-Wilmersdorf,7,13
 129 Münster,7,7
-124 Steinfurt I – Borken I,7,6
-126 Borken II,7,5
 134 Minden-Lübbecke I,7,8
+051 Helmstedt – Wolfsburg,7,13
+127 Coesfeld – Steinfurt II,7,6
+080 Berlin-Charlottenburg-Wilmersdorf,8,13
 045 Gifhorn – Peine,8,12
 042 Stadt Hannover II,8,11
 047 Hannover-Land II,8,10
@@ -65,14 +67,12 @@ Wahlkreisname,row,col
 083 Berlin-Friedrichshain-Kreuzberg – Prenzlauer Berg Ost,8,15
 075 Berlin-Mitte,8,14
 063 Frankfurt (Oder) – Oder-Spree,8,17
-051 Helmstedt – Wolfsburg,8,13
 133 Herford – Minden-Lübbecke II,8,8
 132 Bielefeld – Gütersloh II,8,7
 131 Gütersloh I,8,6
 130 Warendorf,8,5
 114 Krefeld II – Wesel II,8,4
-127 Coesfeld – Steinfurt II,8,3
-112 Kleve,8,2
+112 Kleve,8,3
 066 Altmark,9,13
 048 Hildesheim,9,10
 049 Salzgitter – Wolfenbüttel,9,11
@@ -158,9 +158,8 @@ Wahlkreisname,row,col
 168 Kassel,13,9
 087 Aachen I,13,1
 158 Sächsische Schweiz-Osterzgebirge,14,16
-161 Mittelsachsen,14,14
+161 Mittelsachsen,14,15
 162 Chemnitz,14,13
-165 Zwickau,14,12
 100 Rheinisch-Bergischer Kreis,14,5
 093 Köln I,14,4
 094 Köln II,14,3
@@ -171,7 +170,8 @@ Wahlkreisname,row,col
 169 Werra-Meißner – Hersfeld-Rotenburg,14,8
 170 Schwalm-Eder,14,7
 171 Marburg,14,6
-164 Erzgebirgskreis I,14,15
+164 Erzgebirgskreis I,14,14
+238 Coburg,14,12
 196 Suhl – Schmalkalden-Meiningen – Hildburghausen – Sonneberg,15,10
 166 Vogtlandkreis,15,14
 098 Rhein-Sieg-Kreis II,15,2
@@ -181,10 +181,10 @@ Wahlkreisname,row,col
 172 Lahn-Dill,15,6
 173 Gießen,15,7
 174 Fulda,15,8
-239 Hof,15,13
-238 Coburg,15,12
+239 Hof,15,12
 175 Main-Kinzig – Wetterau II – Schotten,15,9
 248 Bad Kissingen,15,11
+165 Zwickau,15,13
 180 Hanau,16,9
 177 Wetterau I,16,8
 176 Hochtaunus,16,7
@@ -220,6 +220,7 @@ Wahlkreisname,row,col
 232 Amberg,18,12
 234 Schwandorf,18,13
 297 Saarlouis,18,2
+186 Darmstadt,18,6
 275 Mannheim,19,6
 187 Odenwald,19,7
 207 Ludwigshafen/Frankenthal,19,5
@@ -232,7 +233,6 @@ Wahlkreisname,row,col
 245 Nürnberg-Süd,19,11
 241 Ansbach,19,10
 296 Saarbrücken,19,2
-186 Darmstadt,18,6
 274 Heidelberg,20,8
 299 Homburg,20,3
 210 Pirmasens,20,4
@@ -270,13 +270,14 @@ Wahlkreisname,row,col
 258 Stuttgart I,23,7
 260 Böblingen,23,6
 279 Pforzheim,23,5
-253 Augsburg-Land,23,9
-224 Starnberg – Landsberg am Lech,23,10
+224 Starnberg – Landsberg am Lech,23,11
 284 Offenburg,23,4
-221 München-Land,23,12
-219 München-Süd,23,11
 223 Bad Tölz-Wolfratshausen – Miesbach,23,13
 222 Rosenheim,23,14
+219 München-Süd,23,12
+292 Biberach,23,9
+253 Augsburg-Land,23,10
+221 München-Land,24,12
 225 Traunstein,24,14
 261 Esslingen,24,8
 262 Nürtingen,24,7
@@ -284,11 +285,10 @@ Wahlkreisname,row,col
 280 Calw,24,5
 283 Emmendingen – Lahr,24,4
 281 Freiburg,24,3
-257 Ostallgäu,24,12
-292 Biberach,24,10
+257 Ostallgäu,24,11
 295 Zollernalb – Sigmaringen,24,9
-294 Ravensburg,24,11
 226 Weilheim,24,13
+294 Ravensburg,24,10
 291 Ulm,25,9
 286 Schwarzwald-Baar,25,5
 285 Rottweil – Tuttlingen,25,6
