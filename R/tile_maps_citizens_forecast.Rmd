@@ -163,13 +163,13 @@ g <- ggplot(dat_winneronly_grid, aes(col, row)) +
 
 ## Deutsche Version
 g + labs(title = title_de, caption = caption_de)
-ggsave(here("plots", "grid_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, caption = caption_en) +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en)
-ggsave(here("plots", "grid_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -197,16 +197,16 @@ g <-
 ## Deutsche Version
 g + labs(title = title_de, caption = caption_de)
 
-ggsave(here("plots", "grid_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
  
 ## Englische Version
 g + labs(title = title_en, caption = caption_en) +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_fill_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "grid_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 ## Bubble Map
@@ -224,13 +224,13 @@ g <- ggplot(dat_winneronly_grid, aes(col, row)) +
 
 ## Deutsche Version
 g + labs(title = title_de, caption = caption_de)
-ggsave(here("plots", "bubble_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, caption = caption_en) +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en)
-ggsave(here("plots", "bubble_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -258,16 +258,16 @@ g <-
 ## Deutsche Version
 g + labs(title = title_de, caption = caption_de)
 
-ggsave(here("plots", "bubble_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_de_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
  
 ## Englische Version
 g + labs(title = title_en, caption = caption_en) +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_fill_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "bubble_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_en_v2.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -299,17 +299,17 @@ g <-
 g + labs(title = title_de, caption = caption_de,
          subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "grid_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, caption = caption_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_fill_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "grid_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_grid_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 ## Bubble Map inkl. Vorsprung als Farbintensität
@@ -340,17 +340,17 @@ g <-
 g + labs(title = title_de, caption = caption_de,
          subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "bubble_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, caption = caption_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_fill_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "bubble_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -383,17 +383,17 @@ g <-
 g + labs(title = title_de, caption = glue("{caption_de}\nDie Vorhersage der Mandatsgewinner basiert auf einem t-Test auf Basis von Mittelwert und Standardabweichung."),
          subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "bubble_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, caption = glue("{caption_en}\nThe prediction of mandate winners is based on a t-test based on mean and standard deviation."),
          subtitle = "The more intense the coloring, the greater the predicted lead.") +
-  scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_color_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                      name = NULL, labels = parties_en) +
-  scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
+  scale_fill_manual(values = c(party_colors, c("Too close to call" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "bubble_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -420,7 +420,7 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
         plot.background = element_rect(color = "grey67", fill = "grey67")) +
   labs(title = title_de, caption = caption_de)
 
-ggsave(here("plots", "bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -486,7 +486,7 @@ dat_winneronly_grid %>%
   labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "bubble_map_diff_bland_mark.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_diff_bland_mark.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -538,7 +538,7 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "bubble_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_diff_location_highlights.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 ### Städtenamen als Labels
@@ -586,7 +586,7 @@ ggplot(dat_winneronly_grid, aes(col, row)) +
   labs(title = title_de, caption = caption_de,
        subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.")
 
-ggsave(here("plots", "bubble_map_diff_location_highlights_ggforce.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_diff_location_highlights_ggforce.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -624,7 +624,7 @@ girafe(ggobj = g_interactive,
          opts_sizing(rescale = FALSE),
          opts_tooltip(offx = 50, css = tooltip_css)
        ))
-#ggsave(here("plots", "bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
+#ggsave(here("plots", "citizen_forecast", "citizen_forecast_bubble_map_states.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
 
 
@@ -695,7 +695,7 @@ g + labs(title = title_de,
          subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
          caption = glue("{caption_de}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
 
-ggsave(here("plots", "hexagon_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_hexagon_map_diff_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, 
@@ -706,7 +706,7 @@ g + labs(title = title_en,
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "hexagon_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_hexagon_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ``` 
 
 ```{r hexagon-ttest}
@@ -747,7 +747,7 @@ g + labs(title = title_de,
          subtitle = "Je intensiver die Färbung, desto größer ist der vorhergesagte Vorsprung.",
          caption = glue("{caption_de}\nTilegram-Geometrie: pitchinteractiveinc.github.io"))
 
-ggsave(here("plots", "hexagon_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_hexagon_map_t_test_de.pdf"), width = 10, height = 13, device = cairo_pdf)
 
 ## Englische Version
 g + labs(title = title_en, 
@@ -758,7 +758,7 @@ g + labs(title = title_en,
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
                     name = NULL, labels = parties_en)
 
-ggsave(here("plots", "hexagon_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here("plots", "citizen_forecast", "citizen_forecast_hexagon_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ``` 
 
 
