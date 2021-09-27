@@ -18,7 +18,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.width = 10, fig.height = 12, 
+                      fig.width = 10, fig.height = 11.7, 
                       dev = "ragg_png", res = 1000, retina = 1)
 ```
 
@@ -138,11 +138,13 @@ grid_btw <-
 ```{r}
 theme_set(theme_void(base_family = "Editorial New")) #Editorial New, Noto Serif
 theme_update(legend.margin = margin(0, 10, 0, 25),
+             legend.title = element_text(size = 16, margin = margin(15, 0, 1, 0),
+                                         family = "Chivo", face = "bold"),
              legend.text = element_text(size = 16, margin = margin(5, 0, 5, -2.5),
                                         family = "Chivo"),
-             plot.title = element_text(hjust = .5, face = "bold", size = 30,
+             plot.title = element_text(hjust = .5, face = "bold", size = 28,
                                        lineheight = 1.1, margin = margin(t = 10, b = 20)),
-             plot.subtitle = element_text(hjust = .5, color = "grey33", size = 22,
+             plot.subtitle = element_text(hjust = .5, color = "grey33", size = 16,
                                           margin = margin(t = -15, b = 18)),
              plot.title.position = "plot",
              plot.caption = element_text(hjust = 0, color = "grey33", 
@@ -152,20 +154,25 @@ theme_update(legend.margin = margin(0, 10, 0, 25),
              plot.margin = margin(10, 0, 10, 0))
 
 # Party colors
-party_colors <- c("CDU" = "#212121",
+party_colors <- c("SPD" = "#ca0002", ## "#E3000F",  a bit darker now to make it work with CVD
+                  "CDU" = "#212121",
                   "CSU" = "grey33",
-                  "SPD" = "#ca0002", ## "#E3000F",  a bit darker now to make it work with CVD
                   "Bündnis 90/Die Grünen" = rgb(100, 161, 45, maxColorValue = 255),
                   "FDP" = darken("#ffed00", 0.1),
-                  "Die Linke" = "purple",
                   "AfD" = rgb(0, 158, 224, maxColorValue = 255),
+                  "Die Linke" = "purple",
                   "Andere" = "grey74")
 
 party_colors_first <- party_colors[c(1, 2, 3, 4, 6, 7)]
-party_colors_second <- party_colors[c(1, 2, 3, 4, 7)]
+party_colors_second <- party_colors[c(1, 2, 3, 4, 6)]
+
+title_de <- "Ergebnisse der Bundestagswahl 2021"
+title_en <- "Results of the German National Election 2021"
 
 caption_de <- "Grafik: Cédric Scherer & Ansgar Wolsing • Daten: DIE ZEIT"
 caption_en <- "Graphic: Cédric Scherer & Ansgar Wolsing • Source: DIE ZEIT"
+
+parties_first_en <- c("SPD", "CDU", "CSU", "Alliance 90/The Greens", "AfD", "The Left")
 ```
 
 
@@ -174,13 +181,8 @@ caption_en <- "Graphic: Cédric Scherer & Ansgar Wolsing • Source: DIE ZEIT"
 ### Tile Grid Map
 
 ```{r titles-first}
-title_first_de <- "Ergebnisse der Bundestagswahl 2021"
 subtitle_first_de <- "Die stärksten Parteien nach Erststimmen."
-
-title_first_en <- "Results of the German National Election 2021"
 subtitle_first_en <- "The winner parties by first votes."
-
-parties_en <- unique(grid_btw$winner_first_en)
 ```
 
 
@@ -198,13 +200,13 @@ g_tile <- ggplot(grid_btw, aes(col, row)) +
   theme(legend.position = c(.82, .27))
 
 ## Deutsche Version
-g_tile + labs(title = title_first_de, subtitle = subtitle_first_de, caption = caption_de)
-ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_tile + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_winner_de.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 
 ## Englische Version
-g_tile + labs(title = title_first_en, subtitle = subtitle_first_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_en)
-ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_tile + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_winner_en.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 ### mit Wahlkreisnummern
@@ -224,13 +226,13 @@ g_tile_id <- g_tile +
   # )
 
 ## Deutsche Version
-g_tile_id + labs(title = title_first_de, subtitle = subtitle_first_de, caption = caption_de)
-ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_id_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_tile_id + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_winner_de_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 
 ## Englische Version
-g_tile_id + labs(title = title_first_en, subtitle = subtitle_first_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_en)
-ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_id_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_tile_id + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_winner_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 ## Dot Map
@@ -246,14 +248,14 @@ g_dot <- ggplot(grid_btw, aes(col, row)) +
   theme(legend.position = c(.82, .27))
 
 ## Deutsche Version
-g_dot + labs(title = title_first_de, subtitle = subtitle_first_de, caption = caption_de)
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_dot + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_de.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 
 ## Englische Version
-g_dot + labs(title = title_first_en, subtitle = subtitle_first_en, caption = caption_en) +
+g_dot + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
   scale_color_manual(values = party_colors_first,
-                     name = NULL, labels = parties_en)
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+                     name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_en.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 ### mit Wahlkreisnummern
@@ -273,13 +275,13 @@ g_dot_id <- g_dot +
   # )
 
 ## Deutsche Version
-g_dot_id + labs(title = title_first_de, subtitle = subtitle_first_de, caption = caption_de)
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_id_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_dot_id + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_de_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 
 ## Englische Version
-g_dot_id + labs(title = title_first_en, subtitle = subtitle_first_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_en)
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_id_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+g_dot_id + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 
@@ -290,43 +292,153 @@ g_dot_light <-
   ggplot(grid_btw, aes(col, row)) +
   geom_point(
     aes(fill = winner_first_de), 
-    size = 10, shape = 21, stroke = 2, alpha = .5, color = "transparent"
+    size = 8.3, shape = 21, stroke = 2, alpha = .5, color = "transparent"
   ) +
   geom_point(
     aes(color = winner_first_de), 
-    size = 10, shape = 21, stroke = 2, fill = "transparent"
+    size = 8.3, shape = 21, stroke = 2, fill = "transparent"
   ) +
   coord_fixed() +
   scale_x_continuous(limits = c(-.5, max(grid$col) + 4)) +
   scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = party_colors_first, name = NULL) +
   scale_fill_manual(values = party_colors_first, name = NULL) +
-  guides(color = guide_legend(override.aes = list(size = 6))) +
-  theme(legend.position = c(.81, .27),
-        legend.text = element_text(margin = margin(5, 0, 5, 0)))
+  guides(color = guide_legend(override.aes = list(size = 5.5))) +
+  theme(legend.position = c(.82, .27))
 
 ## Deutsche Version
-g_dot_light + labs(title = title_first_de, subtitle = subtitle_first_de, caption = caption_de)
+g_dot_light + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
 
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_de_light.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_de_light.pdf"), width = 10, height = 11.7, device = cairo_pdf)
  
 ## Englische Version
-g_dot_light + labs(title = title_first_en, subtitle = subtitle_first_en, caption = caption_en) +
+g_dot_light + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
   scale_color_manual(values =party_colors_first,
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = party_colors_first,
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
-ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_en_light.pdf"), width = 10, height = 13, device = cairo_pdf)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_en_light.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 
-## Erststimme —  Vorsprung
+## Erststimme — Vorsprung
 
-###  
+### Tile Grid Map
+
+```{r titles-first}
+subtitle_first_diff_de <- "Die stärksten Parteien nach Erststimmen und Vorsprung zur zweitplatzierten Partei."
+subtitle_first_diff_en <- "The winner parties by first votes and lead over the second-placed party."
+```
 
 
-##### OLD
+```{r tile-grid-map-erststimme}
+g_tile <- ggplot(grid_btw, aes(col, row)) +
+  geom_point(
+    aes(color = winner_first_de, alpha = difference_first_percent), 
+    size = 11, shape = 15
+  ) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 4.5)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = party_colors_first, name = NULL) +
+  scale_alpha(range = c(.25, 1), name = "Vorsprung:", labels = scales::percent_format(scale = 1)) +
+  guides(color = guide_legend(override.aes = list(size = 8, alpha = .7), order = 1),
+         alpha = guide_legend(override.aes = list(size = 8), order = 2)) +
+  theme(legend.position = c(.83, .2))
+
+## Deutsche Version
+g_tile + labs(title = title_de, subtitle = subtitle_first_diff_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_diff_de.pdf"), width = 10, height = 11.3, device = cairo_pdf)
+
+## Englische Version
+g_tile + labs(title = title_en, subtitle = subtitle_first_diff_en, caption = caption_en) +
+  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_first_en) +
+  scale_alpha(range = c(.25, 1), name = "Lead:", labels = scales::percent_format(scale = 1))
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_diff_en.pdf"), width = 10, height = 11.3, device = cairo_pdf)
+```
+
+### mit Wahlkreisnummern
+
+```{r tile-grid-map-erststimme-wk}
+g_tile_id <- g_tile +
+  geom_text(
+    data = filter(grid_btw, difference_first_percent > 13),
+    aes(label = id, color = winner_first_de,
+        color = after_scale(lighten(color, .65))),
+    size = 3.2, family = "Chivo", fontface = "bold", 
+    show.legend = FALSE
+  ) +
+  geom_text(
+    data = filter(grid_btw, difference_first_percent <= 13),
+    aes(label = id, color = winner_first_de,
+        color = after_scale(darken(color, .35))),
+    size = 3.2, family = "Chivo", fontface = "bold", 
+    show.legend = FALSE
+  )
+
+## Deutsche Version
+g_tile_id + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_diff_de_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
+
+## Englische Version
+g_tile_id + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_tile_grid_map_first_diff_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
+```
+
+## Dot Map
+
+```{r dot-grid-map-erststimme}
+g_dot <- ggplot(grid_btw, aes(col, row)) +
+  geom_point(aes(color = winner_first_de), size = 10) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 4)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = party_colors_first, name = NULL) +
+  guides(color = guide_legend(override.aes = list(size = 6))) +
+  theme(legend.position = c(.82, .27))
+
+## Deutsche Version
+g_dot + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+
+## Englische Version
+g_dot + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_color_manual(values = party_colors_first,
+                     name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_winner_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+```
+
+### mit Wahlkreisnummern
+
+```{r dot-grid-map-erststimme-wk}
+g_dot_id <- g_dot +
+  geom_text(
+    aes(label = id, color = winner_first_de, 
+        color = after_scale(lighten(color, .35))),
+    size = 3.1, family = "Chivo", fontface = "bold",
+    show.legend = FALSE
+  )
+  # geom_text(
+  #   aes(label = id),
+  #   size = 3.1, family = "Chivo", 
+  #   color = "#fefefe", fontface = "bold"
+  # )
+
+## Deutsche Version
+g_dot_id + labs(title = title_de, subtitle = subtitle_first_de, caption = caption_de)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_id_de.pdf"), width = 10, height = 12, device = cairo_pdf)
+
+## Englische Version
+g_dot_id + labs(title = title_en, subtitle = subtitle_first_en, caption = caption_en) +
+  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_first_en)
+ggsave(here::here("plots", "btw21", "btw21_dot_grid_map_first_id_en.pdf"), width = 10, height = 12, device = cairo_pdf)
+```
+
+
+
+# OLD  ###########################################################################
 
 ## Grid Map inkl. Vorsprung als Farbintensität
 
@@ -362,9 +474,9 @@ ggsave(here::here("plots", "grid_map_diff_de.pdf"), width = 10, height = 13, dev
 g + labs(title = title_en, caption = caption_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
 ggsave(here::here("plots", "grid_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
@@ -403,9 +515,9 @@ ggsave(here::here("plots", "bubble_map_diff_de.pdf"), width = 10, height = 13, d
 g + labs(title = title_en, caption = caption_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.") +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
 ggsave(here::here("plots", "bubble_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
@@ -446,9 +558,9 @@ ggsave(here::here("plots", "bubble_map_t_test_de.pdf"), width = 10, height = 13,
 g + labs(title = title_en, caption = glue("{caption_en}\nThe prediction of mandate winners is based on a t-test based on mean and standard deviation."),
          subtitle = "The more intense the coloring, the greater the predicted lead.") +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
 ggsave(here::here("plots", "bubble_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ```
@@ -759,9 +871,9 @@ g + labs(title = title_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.",
          caption = glue("{caption_en}\nTilegram-Geometrie: pitchinteractiveinc.github.io")) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
 ggsave(here::here("plots", "hexagon_map_diff_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ``` 
@@ -811,9 +923,9 @@ g + labs(title = title_en,
          subtitle = "The more intense the coloring of the dots, the greater the predicted lead.",
          caption = glue("{caption_en}\nTilegram-Geometrie: pitchinteractiveinc.github.io")) +
   scale_color_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                     name = NULL, labels = parties_en) +
+                     name = NULL, labels = parties_first_en) +
   scale_fill_manual(values = c(party_colors, c("Kopf-an-Kopf" = "grey85")),
-                    name = NULL, labels = parties_en)
+                    name = NULL, labels = parties_first_en)
 
 ggsave(here::here("plots", "hexagon_map_t_test_en.pdf"), width = 10, height = 13, device = cairo_pdf)
 ``` 
