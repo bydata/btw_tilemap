@@ -131,9 +131,7 @@ grid_btw <-
 ```
 
 
-# Visualisierungen
-
-## Setup
+# Setup Tile Maps
 
 ```{r}
 theme_set(theme_void(base_family = "Editorial New")) #Editorial New, Noto Serif
@@ -154,9 +152,9 @@ theme_update(legend.margin = margin(0, 10, 0, 25),
              plot.margin = margin(10, 0, 10, 0))
 
 # Party colors
-party_colors <- c("SPD" = "#ca0002", ## "#E3000F",  a bit darker now to make it work with CVD
-                  "CDU" = "#212121",
-                  "CSU" = "grey33",
+party_colors <- c("SPD" = "#ca0002", ##"#E3000F",  a bit darker now to make it work better with CVD
+                  "CDU" = "#212121", 
+                  "CSU" = "grey33", ## "#464662"
                   "Bündnis 90/Die Grünen" = rgb(100, 161, 45, maxColorValue = 255),
                   "FDP" = darken("#ffed00", 0.1),
                   "AfD" = rgb(0, 158, 224, maxColorValue = 255),
@@ -176,7 +174,9 @@ caption_de <- "Grafik: Cédric Scherer & Ansgar Wolsing • Daten: DIE ZEIT"
 caption_en <- "Graphic: Cédric Scherer & Ansgar Wolsing • Source: DIE ZEIT"
 ```
 
-```{r basic-plot}
+# Erststimme
+
+```{r basic-plot-erststimme}
 g <-  
   ggplot(grid_btw, aes(col, row)) +
   coord_fixed() +
@@ -347,7 +347,7 @@ g_hex <- grid_btw %>%
   ggplot(aes(geometry = geometry)) +
   geom_sf(
     aes(fill = winner_first_de),
-    size = .3, col = "#fefefe"
+    size = .3, col = "grey85"
   ) +
   geom_sf_text(
     aes(label = id, color = winner_first_de, 
@@ -361,6 +361,10 @@ g_hex <- grid_btw %>%
         group = bundesland_de),
     fill = NA, col = "#fefefe",
     size = 2.3, show.legend = FALSE
+  ) +
+  geom_sf(
+    aes(fill = winner_first_de),
+    size = .5, fill = NA, col = "grey85",
   ) +
   scale_x_continuous(expand = c(.1, .1)) +
   scale_y_continuous(expand = c(.01, .01)) +
@@ -662,7 +666,20 @@ ggsave(here::here("plots", "btw21", "first-votes", "btw21_dot_grid_map_first_vot
 
 
 
+# Zweitstimme
 
+```{r basic-plot-zweitstimme}
+g <-  
+  ggplot(grid_btw, aes(col, row)) +
+  coord_fixed() +
+  scale_x_continuous(limits = c(-.5, max(grid$col) + 4)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = party_colors_second, name = NULL) +
+  scale_fill_manual(values = party_colors_second, name = NULL) +
+  guides(color = guide_legend(override.aes = list(size = 6)),
+         fill = guide_legend(override.aes = list(size = 6))) +
+  theme(legend.position = c(.82, .27))
+```
 
 ## Zweitstimme — Gewinner
 
@@ -687,9 +704,29 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 
 ## Englische Version
 g_tile_winner + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en)
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_winner_en.pdf"), width = 10, height = 11.7, device = cairo_pdf)
+```
+
+
+```{r tile-grid-map-zweitstimme-true-tiles}
+g_true_tile_winner <- g +
+  geom_tile(
+    aes(fill = winner_second_de, color = after_scale(fill)), 
+    size = 0
+  ) 
+
+## Deutsche Version
+g_true_tile_winner + labs(title = title_de, subtitle = subtitle_second_de, caption = caption_de)
+
+ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_winner_de_true.pdf"), width = 10, height = 11.7, device = cairo_pdf)
+
+## Englische Version
+g_true_tile_winner + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
+
+ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_winner_en_true.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
 
 ### mit Wahlkreisnummern
@@ -715,7 +752,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 
 ## Englische Version
 g_tile_winner_id + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_second_en)
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_winner_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
@@ -733,7 +770,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_w
 
 ## Englische Version
 g_dot_winner + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_color_manual(values = party_colors_first,
+  scale_color_manual(values = party_colors_second,
                      name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_winner_en.pdf"), width = 10, height = 11.7, device = cairo_pdf)
@@ -757,7 +794,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_w
 
 ## Englische Version
 g_dot_winner_id + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_second_en)
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_winner_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
@@ -784,9 +821,9 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_w
  
 ## Englische Version
 g_dot_winner_light + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_color_manual(values =party_colors_first,
+  scale_color_manual(values =party_colors_second,
                      name = NULL, labels = parties_second_en) +
-  scale_fill_manual(values = party_colors_first,
+  scale_fill_manual(values = party_colors_second,
                     name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_winner_en_light.pdf"), width = 10, height = 11.7, device = cairo_pdf)
@@ -796,23 +833,6 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_w
 
 ## Hexagon Tiles
 
-```{r hexagon-tiles-zweitstimme}
-## READ GEOMETRY ==============================================
-#' https://pitchinteractiveinc.github.io/tilegrams/
-#' Download geometry "Germany - Constituencies" as TopoJSON
-#' and place it in the data directory
-filepath_topo <- here("data", "tiles.topo.json")
-wk_topo <- geojsonio::topojson_read(filepath_topo)
-wk_topo <- wk_topo %>% mutate(id = as.numeric(id))
-
-# Merge shapes of constituencies into state-level shapes 
-bland_shape <- wk_topo %>% 
-  inner_join(grid_btw, by = c("id" = "id_num")) %>% 
-  group_by(bundesland_de) %>% 
-  summarize(geometry = st_union(geometry))
-```
-
-
 ### Hexbin Map
 
 ```{r hexbon-map}
@@ -821,7 +841,7 @@ g_hex <- grid_btw %>%
   ggplot(aes(geometry = geometry)) +
   geom_sf(
     aes(fill = winner_second_de),
-    size = .3, col = "#fefefe"
+    size = .3, col = "grey85"
   ) +
   geom_sf_text(
     aes(label = id, color = winner_second_de, 
@@ -836,10 +856,14 @@ g_hex <- grid_btw %>%
     fill = NA, col = "#fefefe",
     size = 2.3, show.legend = FALSE
   ) +
-  scale_x_continuous(expand = c(.1, .1)) +
+  geom_sf(
+    aes(fill = winner_second_de),
+    size = .5, fill = NA, col = "grey85",
+  ) +
+ scale_x_continuous(expand = c(.1, .1)) +
   scale_y_continuous(expand = c(.01, .01)) +
-  scale_color_manual(values = party_colors_first, guide = "none") +
-  scale_fill_manual(values = party_colors_first, name = NULL) +
+  scale_color_manual(values = party_colors_second, guide = "none") +
+  scale_fill_manual(values = party_colors_second, name = NULL) +
   guides(fill = guide_legend(override.aes = list(size = 0.25))) +
   theme(legend.position = c(.16, .92),
         legend.key.size = unit(5, "mm"))
@@ -855,7 +879,7 @@ ggsave(here("plots", "btw21", "second-votes", "btw21_hexagon_map_second_winner_d
 g_hex + 
   labs(title = title_en, subtitle = subtitle_second_en,
        caption = glue("{caption_en}\nTilegram-Geometrie: pitchinteractiveinc.github.io")) +
-  scale_fill_manual(values = party_colors_first,
+  scale_fill_manual(values = party_colors_second,
                     name = NULL, labels = parties_second_en)
 
 ggsave(here("plots", "btw21", "second-votes", "btw21_hexagon_map_second_winner_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
@@ -891,7 +915,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 
 ## Englische Version
 g_tile_diff + labs(title = title_en, subtitle = subtitle_second_diff_en, caption = caption_en) +
-  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, 1), name = "Lead:", labels = scales::percent_format(scale = 1))
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_diff_en.pdf"), width = 10, height = 11.3, device = cairo_pdf)
@@ -902,14 +926,14 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 ```{r tile-grid-map-zweitstimme-vorsprung-wk}
 g_tile_diff_id <- g_tile_diff +
   geom_text(
-    data = filter(grid_btw, difference_second_percent > 15),
+    data = filter(grid_btw, difference_second_percent > 13),
     aes(label = id, color = winner_second_de,
         color = after_scale(lighten(color, .65))),
     size = 3.2, family = "Chivo", fontface = "bold", 
     show.legend = FALSE
   ) +
   geom_text(
-    data = filter(grid_btw, difference_second_percent <= 15),
+    data = filter(grid_btw, difference_second_percent <= 13),
     aes(label = id, color = winner_second_de,
         color = after_scale(darken(color, .35))),
     size = 3.2, family = "Chivo", fontface = "bold", 
@@ -925,7 +949,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 ## Englische Version
 g_tile_diff_id + 
   labs(title = title_en, subtitle = subtitle_second_diff_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, 1), name = "Lead:", labels = scales::percent_format(scale = 1))
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_diff_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
@@ -957,7 +981,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_d
 ## Englische Version
 g_dot_diff + 
   labs(title = title_en, subtitle = subtitle_second_diff_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first,
+  scale_fill_manual(values = party_colors_second,
                     name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, .85), name = "Vorsprung:", labels = scales::percent_format(scale = 1)) 
 
@@ -969,14 +993,14 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_d
 ```{r dot-grid-map-zweitstimme-diff-wk}
 g_dot_diff_id <- g_dot_diff +
   geom_text(
-    data = filter(grid_btw, difference_second_percent > 15),
+    data = filter(grid_btw, difference_second_percent > 12),
     aes(label = id, color = winner_second_de,
         color = after_scale(lighten(color, .65))),
     size = 2.8, family = "Chivo", fontface = "bold", 
     show.legend = FALSE
   ) +
   geom_text(
-    data = filter(grid_btw, difference_second_percent <= 15),
+    data = filter(grid_btw, difference_second_percent <= 12),
     aes(label = id, color = winner_second_de,
         color = after_scale(darken(color, .35))),
     size = 2.8, family = "Chivo", fontface = "bold", 
@@ -992,7 +1016,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_d
 ## Englische Version
 g_dot_diff_id + 
   labs(title = title_en, subtitle = subtitle_second_diff_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en)
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_diff_en_id.pdf"), width = 10, height = 12, device = cairo_pdf)
 ```
@@ -1027,7 +1051,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 
 ## Englische Version
 g_tile_diff + labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
-  scale_color_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, 1), name = "Lead:", labels = scales::percent_format(scale = 1))
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_votes_en.pdf"), width = 10, height = 11.3, device = cairo_pdf)
@@ -1038,14 +1062,14 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 ```{r tile-grid-map-zweitstimme-votes-wk}
 g_tile_diff_id <- g_tile_diff +
   geom_text(
-    data = filter(grid_btw, winner_second_percent > 15),
+    data = filter(grid_btw, winner_second_percent > 30),
     aes(label = id, color = winner_second_de,
         color = after_scale(lighten(color, .65))),
     size = 3.2, family = "Chivo", fontface = "bold", 
     show.legend = FALSE
   ) +
   geom_text(
-    data = filter(grid_btw, winner_second_percent <= 15),
+    data = filter(grid_btw, winner_second_percent <= 30),
     aes(label = id, color = winner_second_de,
         color = after_scale(darken(color, .35))),
     size = 3.2, family = "Chivo", fontface = "bold", 
@@ -1061,7 +1085,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 ## Englische Version
 g_tile_diff_id + 
   labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en) +
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, 1), name = "Lead:", labels = scales::percent_format(scale = 1))
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_votes_en_id.pdf"), width = 10, height = 11.7, device = cairo_pdf)
@@ -1093,7 +1117,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_v
 ## Englische Version
 g_dot_diff + 
   labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first,
+  scale_fill_manual(values = party_colors_second,
                     name = NULL, labels = parties_second_en) +
   scale_alpha(range = c(.25, .85), name = "Zweitstimmen:", labels = scales::percent_format(scale = 1)) 
 
@@ -1105,14 +1129,14 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_v
 ```{r dot-grid-map-zweitstimme-votes-wk}
 g_dot_diff_id <- g_dot_diff +
   geom_text(
-    data = filter(grid_btw, winner_second_percent > 15),
+    data = filter(grid_btw, winner_second_percent > 30),
     aes(label = id, color = winner_second_de,
         color = after_scale(lighten(color, .65))),
     size = 2.8, family = "Chivo", fontface = "bold", 
     show.legend = FALSE
   ) +
   geom_text(
-    data = filter(grid_btw, winner_second_percent <= 15),
+    data = filter(grid_btw, winner_second_percent <= 30),
     aes(label = id, color = winner_second_de,
         color = after_scale(darken(color, .35))),
     size = 2.8, family = "Chivo", fontface = "bold", 
@@ -1128,7 +1152,7 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_v
 ## Englische Version
 g_dot_diff_id + 
   labs(title = title_en, subtitle = subtitle_second_votes_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_first, name = NULL, labels = parties_second_en)
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_votes_en_id.pdf"), width = 10, height = 12, device = cairo_pdf)
 ```
