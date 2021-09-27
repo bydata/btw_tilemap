@@ -1,5 +1,5 @@
 ---
-title: "Bürger*innenvorhersage Kandidaten Bundestagswahl 2021 als Tile Grid, Dot  und Hexbin Maps" 
+title: "Bürger*innenvorhersage Kandidaten Bundestagswahl 2021 als Tile Grid, Dot und Hexbin Maps" 
 description: ""
 author:
     - name: "Cédric Scherer"
@@ -763,14 +763,13 @@ ggsave(here("plots", "citizen_forecast", "citizen_forecast_hexagon_map_t_test_en
 
 
 ```{r convert}
-pdfs <- list.files(here(), pattern = "*.pdf", recursive = TRUE)
+pdfs <- list.files(here('plots', 'citizen_forecast'), pattern = "*.pdf", recursive = TRUE)
 for(pdf in pdfs) {
-  pdf_convert(pdf = glue("{here()}/{pdf}"), 
-              filenames = glue("{here()}/{str_remove(pdf, '.pdf')}.png"),
+  pdf_convert(pdf = glue("{here('plots', 'citizen_forecast')}/{pdf}"), 
+              filenames = glue("{here('plots', 'citizen_forecast')}/{str_remove(pdf, '.pdf')}.png"),
               format = "png", dpi = 500)
 }
 ```
-
 
 
 ***
