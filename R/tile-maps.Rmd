@@ -31,7 +31,7 @@ pacman::p_load("tidyverse", "here", "glue", "colorspace", "gsheet", "labelled", 
 
 # Daten
 
-## Grid Tile Map
+## Tile Grid Map
 
 ```{r grid-constituencies}
 ## csv mit nur Wahlkreisen, für Tile Map
@@ -237,10 +237,11 @@ ggplot(grid, aes(col, row, color = bundesland_en, fill = bundesland_en)) +
   scale_fill_manual(values = pal, name = NULL) + 
   theme(plot.margin = margin(15, 10, 15, 0)) + 
   labs(title = "Tile Grid Map of Germany's Constituencies", caption = "Design: Cédric Scherer & Ansgar Wolsing")
+
 ggsave(here::here("plots", "grid_laender_en.pdf"), width = 10, height = 10, device = cairo_pdf)
 ```
 
-## Grid Tile Map
+## Tile Grid Map
 
 ```{r grid-map}
 g <- ggplot(dat_winneronly_grid, aes(col, row)) +
