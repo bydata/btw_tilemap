@@ -158,7 +158,7 @@ dat_erst_winneronly_dw <-
 ```{r data-join}
 dat_winneronly_grid <- 
   dat_erst_winneronly_dw %>% 
-  left_join(grid) %>% 
+  left_join(grid, by = c("Wahlkreisname" = "wk_full")) %>% 
   mutate(
     outcome_agg = ifelse(outcome %in% c("CDU", "CSU"), "CDU/CSU", outcome),
     diff = as.numeric(`first-place-votes`) - as.numeric(`second-place-votes`),
@@ -212,8 +212,8 @@ parties_en <- c("CDU/CSU", "SPD", "The Greens", "The Left", "AFD", "Too close to
 set.seed(1234567890)
 pal <- sample(ggsci::pal_simpsons()(16))
 
-g <- 
-  ggplot(grid, aes(col, row, color = land, fill = land)) +
+## Deutsche Version
+ggplot(grid, aes(col, row, color = bundesland_de, fill = bundesland_de)) +
   geom_tile(size = 3, color = "#212121") +
   geom_tile(size = .01) +
   coord_fixed() +
@@ -221,14 +221,22 @@ g <-
   scale_y_reverse(expand = c(.03, .03)) +
   scale_color_manual(values = pal, name = NULL) +
   scale_fill_manual(values = pal, name = NULL) + 
-  theme(plot.margin = margin(15, 10, 15, 0))
+  theme(plot.margin = margin(15, 10, 15, 0)) +
+  labs(title = "Tile Grid Karte der Wahlkreise Deutschlands", caption = "Design: Cédric Scherer & Ansgar Wolsing")
 
-## Deutsche Version
-g + labs(title = "Tile Grid Karte der Wahlkreise Deutschland", caption = "Grafik: Cédric Scherer & Ansgar Wolsing")
 ggsave(here::here("plots", "grid_laender_de.pdf"), width = 10, height = 10, device = cairo_pdf)
 
 ## Englische Version
-g + labs(title = "Tile Grid Map of Germany's Constituencies", caption = "Design: Cédric Scherer & Ansgar Wolsing")
+ggplot(grid, aes(col, row, color = bundesland_en, fill = bundesland_en)) +
+  geom_tile(size = 3, color = "#212121") +
+  geom_tile(size = .01) +
+  coord_fixed() +
+  scale_x_continuous(expand = c(.01, .01), limits = c(-.5, max(grid$col) + .5)) +
+  scale_y_reverse(expand = c(.03, .03)) +
+  scale_color_manual(values = pal, name = NULL) +
+  scale_fill_manual(values = pal, name = NULL) + 
+  theme(plot.margin = margin(15, 10, 15, 0)) + 
+  labs(title = "Tile Grid Map of Germany's Constituencies", caption = "Design: Cédric Scherer & Ansgar Wolsing")
 ggsave(here::here("plots", "grid_laender_en.pdf"), width = 10, height = 10, device = cairo_pdf)
 ```
 
@@ -489,7 +497,7 @@ ggsave(here::here("plots", "bubble_map_t_test_en.pdf"), width = 10, height = 13,
 ```{r variant-states-ggforce, eval=FALSE}
 ggplot(dat_winneronly_grid, aes(col, row)) +
   ggforce::geom_mark_hull(
-    aes(group = land), 
+    aes(group = bundesland_de), 
     color = "white",
     expand = unit(0, "mm")
   ) +
@@ -535,7 +543,7 @@ bland_group_mapping <- c(
 )
 
 dat_winneronly_grid %>% 
-  mutate(mark_group = bland_group_mapping[land],
+  mutate(mark_group = bland_group_mapping[bundesland_de],
          mark_shape = case_when(
            mark_group == "A" ~ 21,
            mark_group == "B" ~ 22,
@@ -629,12 +637,12 @@ ggsave(here::here("plots", "bubble_map_diff_location_highlights.pdf"), width = 1
 
 ```{r variant-vorsprung-location-hints-2, eval=FALSE}
 labels <- dat_winneronly_grid %>% 
-  filter(str_detect(wk, "München|Köln") | land %in% c("Berlin", "Hamburg")) %>% 
+  filter(str_detect(wk, "München|Köln") | bundesland_de %in% c("Berlin", "Hamburg")) %>% 
   filter(wk != "München-Land") %>% 
   mutate(label = case_when(
     str_detect(wk, "München") ~ "München",
     str_detect(wk, "Köln") ~ "Köln",
-    TRUE ~ land
+    TRUE ~ bundesland_de
   ))
 
 
@@ -681,7 +689,7 @@ ggsave(here::here("plots", "bubble_map_diff_location_highlights_ggforce.pdf"), w
 library(ggiraph)
 
 g_interactive <- dat_winneronly_grid %>% 
-  mutate(label = str_wrap(glue::glue("{Wahlkreisname} ({land})<br><br>Vorsprung:<br>{outcome} {diff}%"), 50)) %>% 
+  mutate(label = str_wrap(glue::glue("{Wahlkreisname} ({bundesland_de})<br><br>Vorsprung:<br>{outcome} {diff}%"), 50)) %>% 
   ggplot(aes(col, row)) +
   geom_point_interactive(
     aes(fill = outcome_agg, alpha = diff, tooltip = label, data_id = label), 
@@ -726,7 +734,7 @@ wk_topo <- wk_topo %>% mutate(id = as.numeric(id))
 # Merge shapes of constituencies into state-level shapes 
 bland_shape <- wk_topo %>% 
   inner_join(dat_winneronly_grid, by = c("id" = "wkr")) %>% 
-  group_by(land) %>% 
+  group_by(bundesland_de) %>% 
   summarize(geometry = st_union(geometry))
 
 df_constituencies_highlight_hex <- wk_topo %>% 
@@ -752,7 +760,7 @@ g <- dat_winneronly_grid %>%
                size = 2.5, family = "Roboto Mono") +
   geom_sf(data = bland_shape,
           aes(geometry = geometry, 
-              group = land),
+              group = bundesland_de),
           fill = NA, col = "grey96",
           size = 2, show.legend = FALSE) +
   geom_sf(aes(col = outcome_agg),
@@ -804,7 +812,7 @@ g <- dat_winneronly_grid %>%
                size = 2.5, family = "Roboto Mono") +
   geom_sf(data = bland_shape,
           aes(geometry = geometry, 
-              group = land),
+              group = bundesland_de),
           fill = NA, col = "grey96",
           size = 2, show.legend = FALSE) +
   geom_sf(aes(col = outcome_agg),
