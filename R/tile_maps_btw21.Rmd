@@ -724,7 +724,8 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_
 
 ## Englische Version
 g_true_tile_winner + labs(title = title_en, subtitle = subtitle_second_en, caption = caption_en) +
-  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
+  scale_fill_manual(values = party_colors_second, name = NULL, labels = parties_second_en) +
+  scale_color_manual(values = party_colors_second, name = NULL, labels = parties_second_en)
 
 ggsave(here::here("plots", "btw21", "second-votes", "btw21_tile_grid_map_second_winner_en_true.pdf"), width = 10, height = 11.7, device = cairo_pdf)
 ```
@@ -1158,16 +1159,6 @@ ggsave(here::here("plots", "btw21", "second-votes", "btw21_dot_grid_map_second_v
 ```
 
 
-```{r convert}
-pdfs <- list.files(here::here('plots', 'btw21'), pattern = "*.pdf", recursive = TRUE)
-for(pdf in pdfs) {
-  pdf_convert(pdf = glue::glue("{here::here('plots', 'btw21')}/{pdf}"), 
-              filenames = glue::glue("{here::here('plots', 'btw21')}/{str_remove(pdf, '.pdf')}.png"),
-              format = "png", dpi = 500)
-}
-```
-
-
 
 ## Trends 2021 vs. 2017
 
@@ -1338,18 +1329,14 @@ for (party_selected in parties) {
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+```{r convert}
+pdfs <- list.files(here::here('plots', 'btw21'), pattern = "*.pdf", recursive = TRUE)
+for(pdf in pdfs) {
+  pdf_convert(pdf = glue::glue("{here::here('plots', 'btw21')}/{pdf}"), 
+              filenames = glue::glue("{here::here('plots', 'btw21')}/{str_remove(pdf, '.pdf')}.png"),
+              format = "png", dpi = 500)
+}
+```
 
 
 
