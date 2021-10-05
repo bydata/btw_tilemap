@@ -75,7 +75,7 @@ btw_clean <- btw_raw %>%
 btw_first <- 
   btw_clean %>% 
   group_by(electoral_id) %>%
-  arrange(-first_percent) %>% 
+  arrange(-first_percent, -first_absolute) %>% 
   slice(1:2) %>% 
   mutate(rank = row_number()) %>% 
   dplyr::select(electoral_id, first_percent, winner_de, winner_en, rank) %>% 
@@ -100,7 +100,7 @@ btw_first <-
 btw_second <- 
   btw_clean %>% 
   group_by(electoral_id) %>%
-  arrange(-second_percent) %>% 
+  arrange(-second_percent, -second_absolute) %>% 
   slice(1:2) %>% 
   mutate(rank = row_number()) %>% 
   dplyr::select(electoral_id, second_percent, winner_de, winner_en, rank) %>% 
@@ -154,7 +154,7 @@ theme_update(legend.margin = margin(0, 10, 0, 25),
 # Party colors
 party_colors <- c("SPD" = "#ca0002", ##"#E3000F",  a bit darker now to make it work better with CVD
                   "CDU" = "#212121", 
-                  "CSU" = "#464662", ## grey33
+                  "CSU" = "#4e4e6d", ## grey33, #464662
                   "Bündnis 90/Die Grünen" = rgb(100, 161, 45, maxColorValue = 255),
                   "FDP" = darken("#ffed00", 0.1),
                   "AfD" = rgb(0, 158, 224, maxColorValue = 255),
@@ -1329,7 +1329,7 @@ for (party_selected in parties) {
 ```
 
 
-```{r convert}
+```{r convert, eval=FALSE}
 pdfs <- list.files(here::here('plots', 'btw21'), pattern = "*.pdf", recursive = TRUE)
 for(pdf in pdfs) {
   pdf_convert(pdf = glue::glue("{here::here('plots', 'btw21')}/{pdf}"), 
