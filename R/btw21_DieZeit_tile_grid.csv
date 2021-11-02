@@ -1,7 +1,7 @@
 wk_full,wk,id,bundesland_de,bundesland_en,col,row,id_num,winner_first_de,winner_first_en,follow_first_de,follow_first_en,winner_first_percent,follow_first_percent,difference_first_percent,winner_second_de,winner_second_en,follow_second_de,follow_second_en,winner_second_percent,follow_second_percent,difference_second_percent
 001 Flensburg – Schleswig,Flensburg – Schleswig,001,Schleswig-Holstein,Schleswig-Holstein,11,1,1,Bündnis 90/Die Grünen,Alliance 90/The Greens,CDU,CDU,28.1,23.4,4.700000000000003,SPD,SPD,CDU,CDU,25.5,20.4,5.100000000000001
 002 Nordfriesland – Dithmarschen Nord,Nordfriesland – Dithmarschen Nord,002,Schleswig-Holstein,Schleswig-Holstein,10,1,2,CDU,CDU,SPD,SPD,30.4,27.8,2.599999999999998,SPD,SPD,CDU,CDU,26.3,24.6,1.6999999999999993
-003 Steinburg – Dithmarschen Süd,Steinburg – Dithmarschen Süd,003,Schleswig-Holstein,Schleswig-Holstein,10,2,3,SPD,SPD,CDU,CDU,29.2,29.2,0,SPD,SPD,CDU,CDU,27.7,24.3,3.3999999999999986
+003 Steinburg – Dithmarschen Süd,Steinburg – Dithmarschen Süd,003,Schleswig-Holstein,Schleswig-Holstein,10,2,3,CDU,CDU,SPD,SPD,29.2,29.2,0,SPD,SPD,CDU,CDU,27.7,24.3,3.3999999999999986
 004 Rendsburg-Eckernförde,Rendsburg-Eckernförde,004,Schleswig-Holstein,Schleswig-Holstein,11,2,4,SPD,SPD,CDU,CDU,30.8,29.7,1.1000000000000014,SPD,SPD,CDU,CDU,26.8,23.9,2.900000000000002
 005 Kiel,Kiel,005,Schleswig-Holstein,Schleswig-Holstein,12,2,5,SPD,SPD,Bündnis 90/Die Grünen,Alliance 90/The Greens,29.5,28.1,1.3999999999999986,Bündnis 90/Die Grünen,Alliance 90/The Greens,SPD,SPD,28.4,26,2.3999999999999986
 006 Plön – Neumünster,Plön – Neumünster,006,Schleswig-Holstein,Schleswig-Holstein,12,3,6,SPD,SPD,CDU,CDU,31.4,27.9,3.5,SPD,SPD,CDU,CDU,29.2,22.9,6.300000000000001
@@ -158,7 +158,7 @@ wk_full,wk,id,bundesland_de,bundesland_en,col,row,id_num,winner_first_de,winner_
 157 Görlitz,Görlitz,157,Sachsen,Saxony,18,12,157,AfD,AfD,CDU,CDU,35.8,26.1,9.699999999999996,AfD,AfD,CDU,CDU,32.5,18.3,14.2
 158 Sächsische Schweiz-Osterzgebirge,Sächsische Schweiz-Osterzgebirge,158,Sachsen,Saxony,16,14,158,AfD,AfD,CDU,CDU,33,19.2,13.8,AfD,AfD,CDU,CDU,31.9,17.1,14.799999999999997
 159 Dresden I,Dresden I,159,Sachsen,Saxony,16,13,159,CDU,CDU,Die Linke,The Left,21.1,18.9,2.200000000000003,SPD,SPD,AfD,AfD,19,17.9,1.1000000000000014
-160 Dresden II – Bautzen II,Dresden II – Bautzen II,160,Sachsen,Saxony,17,13,160,AfD,AfD,CDU,CDU,18.6,18.6,0,AfD,AfD,Bündnis 90/Die Grünen,Alliance 90/The Greens,19.1,16.6,2.5
+160 Dresden II – Bautzen II,Dresden II – Bautzen II,160,Sachsen,Saxony,17,13,160,CDU,CDU,AfD,AfD,18.6,18.6,0,AfD,AfD,Bündnis 90/Die Grünen,Alliance 90/The Greens,19.1,16.6,2.5
 161 Mittelsachsen,Mittelsachsen,161,Sachsen,Saxony,15,14,161,AfD,AfD,CDU,CDU,33.4,23.8,9.599999999999998,AfD,AfD,SPD,SPD,30,18.5,11.5
 162 Chemnitz,Chemnitz,162,Sachsen,Saxony,13,14,162,SPD,SPD,AfD,AfD,25.1,21.9,3.200000000000003,SPD,SPD,AfD,AfD,23.4,21.6,1.7999999999999972
 163 Chemnitzer Umland – Erzgebirgskreis II,Chemnitzer Umland – Erzgebirgskreis II,163,Sachsen,Saxony,13,13,163,AfD,AfD,CDU,CDU,28.9,23.7,5.199999999999999,AfD,AfD,SPD,SPD,27.3,20.2,7.100000000000001

@@ -128,6 +128,8 @@ grid_btw <-
   grid %>% 
   left_join(btw_first, by = c("id_num" = "electoral_id")) %>% 
   left_join(btw_second, by = c("id_num" = "electoral_id"))
+
+write_csv(grid_btw, "btw21_DieZeit_tile_grid.csv")
 ```
 
 
